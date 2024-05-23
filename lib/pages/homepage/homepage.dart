@@ -23,7 +23,7 @@ class _HomepageState extends State<Homepage> {
       case 1:
         return SpacePage();
       case 2:
-        return const CreatePage();
+        return CreatePage();
       default:
         return const ExplorePage();
     }
