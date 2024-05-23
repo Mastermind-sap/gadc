@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/pages.dart';
+import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(seconds: 5)).then((value) => Navigator.of(context)
+    Future.delayed(Duration(seconds: 4)).then((value) => Navigator.of(context)
         .pushNamedAndRemoveUntil(
             Homepage.routeName, (Route<dynamic> route) => false));
   }
@@ -24,7 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("GADC Splash Sample"),
+        child: Lottie.asset('assets/splash_screen.json',
+            backgroundLoading: true, frameRate: const FrameRate(144)),
       ),
     );
   }

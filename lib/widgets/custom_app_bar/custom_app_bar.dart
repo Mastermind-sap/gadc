@@ -19,7 +19,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     // TODO: implement initState
     // init();
     super.initState();
-    _displayedTitle = widget.title ?? "GADC";
+    _displayedTitle = widget.title ?? "Aura-F";
   }
 
   @override

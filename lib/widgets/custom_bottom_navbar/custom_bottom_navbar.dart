@@ -23,12 +23,12 @@ class CustomBottomNavbar extends StatelessWidget {
             label: "Explore",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.edit_location_alt),
-            label: "Create",
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.my_location),
             label: "Space",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.edit_location_alt),
+            label: "Create",
           ),
         ]);
   }
