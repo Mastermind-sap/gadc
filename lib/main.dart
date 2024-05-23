@@ -13,6 +13,7 @@ class GADC extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "GADC",
+      darkTheme: ThemeData.dark(),
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
         Homepage.routeName: (context) => const Homepage(),
