@@ -14,7 +14,7 @@ class GADC extends StatelessWidget {
     return MaterialApp(
       title: "GADC",
       routes: {
-        SplashScreen.routeName:(context) => const SplashScreen(),
+        SplashScreen.routeName: (context) => const SplashScreen(),
         Homepage.routeName: (context) => const Homepage(),
       },
       initialRoute: SplashScreen.routeName,
