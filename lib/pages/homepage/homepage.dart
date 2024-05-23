@@ -21,11 +21,32 @@ class _HomepageState extends State<Homepage> {
       case 0:
         return const ExplorePage();
       case 1:
-        return const CreatePage();
+        return SpacePage();
       case 2:
-        return const SpacePage();
+        return const CreatePage();
       default:
         return const ExplorePage();
+    }
+  }
+
+  PreferredSizeWidget getAppBar() {
+    switch (currentBottomIndex) {
+      case 0:
+        return const CustomAppBar(
+          subtitle: "Explore",
+        );
+      case 1:
+        return const CustomAppBar(
+          subtitle: "3D",
+        );
+      case 2:
+        return const CustomAppBar(
+          subtitle: "Create",
+        );
+      default:
+        return const CustomAppBar(
+          subtitle: "Explore",
+        );
     }
   }
 
@@ -38,7 +59,7 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: getAppBar(),
       body: getPage(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String? title;
-  const CustomAppBar({super.key, this.title});
+  final String? subtitle;
+  const CustomAppBar({super.key, this.title, this.subtitle});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -16,24 +17,42 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    // init();
     super.initState();
     _displayedTitle = widget.title ?? "Aura-F";
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(
-        _displayedTitle,
-        style: const TextStyle(
-          // color: Color(0xFF05354C),
-          fontWeight: FontWeight.w700,
-        ),
+    return // Generated code for this AppBar Widget...
+        AppBar(
+      backgroundColor: Color(0x004B39EF),
+      automaticallyImplyLeading: false,
+      title: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          const Text(
+            'Aura',
+            style: TextStyle(
+              fontSize: 24,
+            ),
+          ),
+          Align(
+            alignment: const AlignmentDirectional(-1, 0),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(8, 4, 0, 0),
+              child: Text(
+                widget.subtitle ?? "Explore",
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+      actions: [],
       centerTitle: false,
-      backgroundColor: const Color.fromARGB(192, 1, 255, 56),
+      elevation: 2,
     );
   }
 }
