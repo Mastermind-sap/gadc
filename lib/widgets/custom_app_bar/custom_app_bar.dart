@@ -28,12 +28,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
       title: Text(
         _displayedTitle,
         style: const TextStyle(
-          color: Color(0xFF05354C),
+          // color: Color(0xFF05354C),
           fontWeight: FontWeight.w700,
         ),
       ),
-      centerTitle: true,
-      backgroundColor: Colors.transparent,
+      centerTitle: false,
+      backgroundColor: const Color.fromARGB(192, 1, 255, 56),
     );
   }
 }
