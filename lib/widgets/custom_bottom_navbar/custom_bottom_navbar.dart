@@ -12,7 +12,7 @@ class CustomBottomNavbar extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         unselectedItemColor: const Color.fromARGB(255, 0, 45, 82),
         selectedItemColor: Colors.purple,
-        backgroundColor: Colors.lightBlue,
+        // backgroundColor: Color.fromARGB(192, 1, 255, 56),
         showSelectedLabels: true,
         showUnselectedLabels: false,
         currentIndex: selected,
