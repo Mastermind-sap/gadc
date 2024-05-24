@@ -19,7 +19,7 @@ class ExplorePage extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 child: Container(
                   width: double.infinity,
-                  height: 400,
+                  height: 600,
                   decoration: BoxDecoration(
                     color: Theme.of(context).secondaryHeaderColor,
                     borderRadius: const BorderRadius.only(
@@ -41,7 +41,7 @@ class ExplorePage extends StatelessWidget {
                         child: Image.network(
                           'https://www.thestatesman.com/wp-content/uploads/2020/04/googl_ED.jpg',
                           width: double.infinity,
-                          height: 400,
+                          height: 600,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -103,22 +103,33 @@ class ExplorePage extends StatelessWidget {
               ),
             ),
           ),
-          const Align(
-            alignment: AlignmentDirectional(-1, 0),
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Text(
-                'EXPLORE',
-                style: TextStyle(
-                  fontSize: 24,
+          const // Generated code for this Row Widget...
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Align(
+                  alignment: AlignmentDirectional(-1, 0),
+                  child: Text(
+                    'EXPLORE',
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                    // style: FlutterFlowTheme.of(context).bodyMedium.override(
+                    //       fontFamily: 'Readex Pro',
+                    //       fontSize: 24,
+                    //       letterSpacing: 0,
+                    //     ),
+                  ),
                 ),
-              ),
+                Icon(
+                  Icons.arrow_drop_down,
+                  size: 24,
+                ),
+              ],
             ),
-          ),
-          const Divider(
-            thickness: 1,
-            indent: 8,
-            endIndent: 16,
           ),
         ],
       ),
