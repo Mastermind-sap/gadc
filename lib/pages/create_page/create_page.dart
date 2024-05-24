@@ -40,24 +40,24 @@ class CreatePage extends StatelessWidget {
                         onUnityCreated: onUnityCreated,
                       ),
                     ),
-                    Align(
-                      alignment: AlignmentDirectional(0, 1),
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          'Made with\nUNITY',
-                          textAlign: TextAlign.center,
-                          // style: Theme.of(context)
-                          //     .textTheme
-                          //     .bodyText2
-                          //     ?.copyWith(
-                          //       fontFamily: 'Readex Pro',
-                          //       color: Theme.of(context).secondaryHeaderColor,
-                          //       fontSize: 14,
-                          //     ),
-                        ),
-                      ),
-                    ),
+                    // Align(
+                    //   alignment: AlignmentDirectional(0, 1),
+                    //   child: Padding(
+                    //     padding: EdgeInsets.all(8),
+                    //     child: Text(
+                    //       'Made with\nUNITY',
+                    //       textAlign: TextAlign.center,
+                    //       // style: Theme.of(context)
+                    //       //     .textTheme
+                    //       //     .bodyText2
+                    //       //     ?.copyWith(
+                    //       //       fontFamily: 'Readex Pro',
+                    //       //       color: Theme.of(context).secondaryHeaderColor,
+                    //       //       fontSize: 14,
+                    //       //     ),
+                    //     ),
+                    //   ),
+                    // ),
                     Align(
                       alignment: AlignmentDirectional(1, 0),
                       child: Card(
