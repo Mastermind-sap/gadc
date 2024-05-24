@@ -103,8 +103,7 @@ class ExplorePage extends StatelessWidget {
               ),
             ),
           ),
-          const // Generated code for this Row Widget...
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(8),
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -117,11 +116,6 @@ class ExplorePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 24,
                     ),
-                    // style: FlutterFlowTheme.of(context).bodyMedium.override(
-                    //       fontFamily: 'Readex Pro',
-                    //       fontSize: 24,
-                    //       letterSpacing: 0,
-                    //     ),
                   ),
                 ),
                 Icon(
