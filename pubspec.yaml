@@ -38,6 +38,9 @@ dependencies:
   lottie: ^3.1.2
   flutter_unity_widget: ^2022.2.1
   flutter_launcher_icons: ^0.13.1
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+  flutter_map_cancellable_tile_provider: ^2.0.0
 
 dev_dependencies:
   flutter_test:
