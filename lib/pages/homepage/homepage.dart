@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/widgets/custom_app_bar/custom_app_bar.dart';
+import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
 import '../pages.dart';
@@ -60,6 +61,7 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(),
+      endDrawer: const CustomAppDrawer(),
       body: getPage(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
