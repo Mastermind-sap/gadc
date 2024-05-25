@@ -23,8 +23,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return // Generated code for this AppBar Widget...
-        AppBar(
+    return AppBar(
       backgroundColor: Color(0x004B39EF),
       automaticallyImplyLeading: false,
       title: Row(
