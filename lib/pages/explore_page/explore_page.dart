@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:gadc/pages/test_page/test_page.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../config/assets.dart';
@@ -25,6 +26,11 @@ class ExplorePage extends StatelessWidget {
         backgroundColor: Colors.black,
         onMapReady: () {},
         onLongPress: (tapPosition, point) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TestingPage(l: point),
+            ),
+          );
           print(point.latitude); //prints latitude
           print(point.longitude); //prints latitude
         },
