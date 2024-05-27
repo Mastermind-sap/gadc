@@ -70,7 +70,7 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: getAppBar(),
+      // appBar: getAppBar(),
       drawer: const CustomAppDrawer(),
       body: getPage(),
       bottomNavigationBar: CustomBottomNavbar(

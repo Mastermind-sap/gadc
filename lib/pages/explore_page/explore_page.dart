@@ -39,21 +39,21 @@ class _ExplorePageState extends State<ExplorePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(0),
             child: Align(
               alignment: const AlignmentDirectional(0, -1),
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: Container(
                   width: double.infinity,
-                  height: 600,
+                  height: MediaQuery.of(context).size.height * 0.85,
                   decoration: BoxDecoration(
                     color: Theme.of(context).secondaryHeaderColor,
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(0),
                       bottomRight: Radius.circular(24),
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
+                      topLeft: Radius.circular(0),
+                      topRight: Radius.circular(0),
                     ),
                   ),
                   child: Stack(
@@ -62,8 +62,8 @@ class _ExplorePageState extends State<ExplorePage> {
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(0),
                           bottomRight: Radius.circular(24),
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
+                          topLeft: Radius.circular(0),
+                          topRight: Radius.circular(0),
                         ),
                         child: FutureBuilder<Position>(
                           future: locateMe(),
@@ -88,10 +88,19 @@ class _ExplorePageState extends State<ExplorePage> {
                                 ),
                                 keepAlive:
                                     true, // so that it does not reset to initial position on changing pages
+                                minZoom: 3.0,
+                                maxZoom: 18.0,
+                                enableScrollWheel:
+                                    true, // Enable scroll wheel zoom
+                                interactiveFlags: InteractiveFlag.pinchZoom |
+                                    InteractiveFlag.drag |
+                                    InteractiveFlag.doubleTapZoom |
+                                    InteractiveFlag
+                                        .flingAnimation, // Use specific flags
                                 initialCenter: LatLng(snapshot.data!.latitude,
                                     snapshot.data!.longitude),
-                                initialZoom: 10.0,
-                                backgroundColor: Colors.black,
+                                initialZoom: 15.0,
+                                backgroundColor: Colors.black45,
                                 onMapReady: () {},
                                 onLongPress: (tapPosition, point) {
                                   Navigator.of(context).push(
@@ -100,8 +109,6 @@ class _ExplorePageState extends State<ExplorePage> {
                                           TestingPage(l: point),
                                     ),
                                   );
-                                  print(point.latitude); // prints latitude
-                                  print(point.longitude); // prints latitude
                                 },
                               ),
                               children: [
@@ -115,7 +122,14 @@ class _ExplorePageState extends State<ExplorePage> {
                                 MarkerLayer(
                                   markers: [
                                     Marker(
-                                      point: LatLng(24.7577, 92.7923),
+                                      point: const LatLng(24.7577, 92.7923),
+                                      width: 20,
+                                      height: 20,
+                                      child: Image.asset("assets/pin.png"),
+                                    ),
+                                    Marker(
+                                      point: LatLng(snapshot.data!.latitude,
+                                          snapshot.data!.longitude),
                                       width: 20,
                                       height: 20,
                                       child: Image.asset("assets/pin.png"),
@@ -128,7 +142,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 32, 8, 32),
+                        padding: const EdgeInsets.fromLTRB(8, 36, 8, 36),
                         child: TextFormField(
                           autofocus: false,
                           obscureText: false,
