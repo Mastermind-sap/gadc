@@ -16,17 +16,26 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int currentBottomIndex = 0;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void openDrawer() {
+    _scaffoldKey.currentState!.openDrawer();
+  }
 
   Widget getPage() {
     switch (currentBottomIndex) {
       case 0:
-        return const ExplorePage();
+        return ExplorePage(
+          drawer_key: openDrawer,
+        );
       case 1:
         return SpacePage();
       case 2:
         return CreatePage();
       default:
-        return const ExplorePage();
+        return ExplorePage(
+          drawer_key: openDrawer,
+        );
     }
   }
 
@@ -60,8 +69,9 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: getAppBar(),
-      endDrawer: const CustomAppDrawer(),
+      drawer: const CustomAppDrawer(),
       body: getPage(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
