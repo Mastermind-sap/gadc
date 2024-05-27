@@ -3,9 +3,11 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gadc/functions/locate_me.dart';
+import 'package:gadc/functions/show_toast.dart';
 import 'package:gadc/pages/test_page/test_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../config/assets.dart';
 
@@ -18,17 +20,81 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
-  double my_lat = 0, my_long = 0;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
-  // void openDrawer() {
-  //   widget.drawer_key.currentState!.openDrawer();
-  // }
+  // write user last location in shared pref
+  void writeMyLastLocation(double lat, double long) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+        'myLastLocation', <String>[lat.toString(), long.toString()]);
+  }
+
+  Future<List<String>?> readMyLastLocation() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String>? temp = prefs.getStringList('myLastLocation');
+    return temp;
+  }
+
+  Widget map(double myLat, double myLong) {
+    return FlutterMap(
+      mapController: MapController(),
+      options: MapOptions(
+        cameraConstraint: CameraConstraint.contain(
+          bounds: LatLngBounds(
+            LatLng(-90, -180), // Southwest corner of the bounds
+            LatLng(90, 180), // Northeast corner of the bounds
+          ),
+        ),
+        keepAlive:
+            true, // so that it does not reset to initial position on changing pages
+        minZoom: 3.0,
+        maxZoom: 18.0,
+        enableScrollWheel: true, // Enable scroll wheel zoom
+        interactiveFlags: InteractiveFlag.pinchZoom |
+            InteractiveFlag.drag |
+            InteractiveFlag.doubleTapZoom |
+            InteractiveFlag.flingAnimation, // Use specific flags
+        initialCenter: LatLng(myLat, myLong),
+        initialZoom: 15.0,
+        backgroundColor: Colors.black45,
+        onMapReady: () {},
+        onLongPress: (tapPosition, point) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TestingPage(l: point),
+            ),
+          );
+        },
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+          // errorImage: AssetImage(assetName), // set an image to load when map not load due to no network connection
+        ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              point: const LatLng(24.7577, 92.7923),
+              width: 20,
+              height: 20,
+              child: Image.asset("assets/pin.png"),
+            ),
+            Marker(
+              point: LatLng(myLat, myLong),
+              width: 20,
+              height: 20,
+              child: Image.asset("assets/pin.png"),
+            ),
+          ],
+        )
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,76 +134,44 @@ class _ExplorePageState extends State<ExplorePage> {
                         child: FutureBuilder<Position>(
                           future: locateMe(),
                           builder: (context, snapshot) {
+                            double? lastLat;
+                            double? lastLong;
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              // later return here the previous stored map location
-                              return const Center(
-                                child: CircularProgressIndicator(),
+                              // show map based on previous data
+                              return FutureBuilder(
+                                future: readMyLastLocation(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  lastLat =
+                                      double.parse(snapshot.data?[0] ?? "-1");
+                                  lastLong =
+                                      double.parse(snapshot.data?[1] ?? "-1");
+
+                                  // nul safety checks
+                                  if (lastLat == -1 && lastLong == -1) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+
+                                  return map(lastLat!, lastLong!);
+                                },
                               );
                             }
-                            return FlutterMap(
-                              mapController: MapController(),
-                              options: MapOptions(
-                                cameraConstraint: CameraConstraint.contain(
-                                  bounds: LatLngBounds(
-                                    LatLng(-90,
-                                        -180), // Southwest corner of the bounds
-                                    LatLng(90,
-                                        180), // Northeast corner of the bounds
-                                  ),
-                                ),
-                                keepAlive:
-                                    true, // so that it does not reset to initial position on changing pages
-                                minZoom: 3.0,
-                                maxZoom: 18.0,
-                                enableScrollWheel:
-                                    true, // Enable scroll wheel zoom
-                                interactiveFlags: InteractiveFlag.pinchZoom |
-                                    InteractiveFlag.drag |
-                                    InteractiveFlag.doubleTapZoom |
-                                    InteractiveFlag
-                                        .flingAnimation, // Use specific flags
-                                initialCenter: LatLng(snapshot.data!.latitude,
-                                    snapshot.data!.longitude),
-                                initialZoom: 15.0,
-                                backgroundColor: Colors.black45,
-                                onMapReady: () {},
-                                onLongPress: (tapPosition, point) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TestingPage(l: point),
-                                    ),
-                                  );
-                                },
-                              ),
-                              children: [
-                                TileLayer(
-                                  urlTemplate:
-                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  userAgentPackageName:
-                                      'dev.fleaflet.flutter_map.example',
-                                  // errorImage: AssetImage(assetName), // set an image to load when map not load due to no network connection
-                                ),
-                                MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      point: const LatLng(24.7577, 92.7923),
-                                      width: 20,
-                                      height: 20,
-                                      child: Image.asset("assets/pin.png"),
-                                    ),
-                                    Marker(
-                                      point: LatLng(snapshot.data!.latitude,
-                                          snapshot.data!.longitude),
-                                      width: 20,
-                                      height: 20,
-                                      child: Image.asset("assets/pin.png"),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            );
+                            // New Data
+                            double lat = snapshot.data!.latitude;
+                            double long = snapshot.data!.longitude;
+                            if (lat == lastLat && long == lastLong) {
+                              return Container();
+                            }
+                            writeMyLastLocation(lat, long);
+                            return map(lat, long);
                           },
                         ),
                       ),
@@ -204,12 +238,12 @@ class _ExplorePageState extends State<ExplorePage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
+          const Padding(
+            padding: EdgeInsets.all(8),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Align(
                   alignment: AlignmentDirectional(-1, 0),
                   child: Text(
