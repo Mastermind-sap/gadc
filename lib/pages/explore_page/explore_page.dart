@@ -10,7 +10,8 @@ import 'package:latlong2/latlong.dart';
 import '../../config/assets.dart';
 
 class ExplorePage extends StatefulWidget {
-  const ExplorePage({super.key});
+  final VoidCallback drawer_key;
+  const ExplorePage({super.key, required this.drawer_key});
 
   @override
   _ExplorePageState createState() => _ExplorePageState();
@@ -24,6 +25,10 @@ class _ExplorePageState extends State<ExplorePage> {
     // TODO: implement initState
     super.initState();
   }
+
+  // void openDrawer() {
+  //   widget.drawer_key.currentState!.openDrawer();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +162,14 @@ class _ExplorePageState extends State<ExplorePage> {
                               borderRadius: BorderRadius.circular(24),
                             ),
                             filled: true,
-                            prefixIcon: Icon(
-                              Icons.notes,
-                              color: Theme.of(context).secondaryHeaderColor,
+                            prefixIcon: GestureDetector(
+                              onTap: () {
+                                widget.drawer_key();
+                              },
+                              child: Icon(
+                                Icons.notes,
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
                             ),
                             suffixIcon: Icon(
                               Icons.search_sharp,
