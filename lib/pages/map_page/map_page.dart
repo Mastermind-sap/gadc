@@ -35,7 +35,7 @@ class _MapPage extends State<MapPage> {
             InteractiveFlag.doubleTapZoom |
             InteractiveFlag.flingAnimation, // Use specific flags
         initialCenter: LatLng(myLat, myLong),
-        initialZoom: 15.0,
+        initialZoom: 17.5,
         backgroundColor: Colors.black45,
         onMapReady: () {},
         onLongPress: (tapPosition, point) {

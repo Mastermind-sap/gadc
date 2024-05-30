@@ -56,15 +56,39 @@ class _ExplorePageState extends State<ExplorePage> {
                         ),
                         child: MapPage(),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 48, 8, 0),
                         child: Row(
                           children: [
+                            GestureDetector(
+                              onTap: () {
+                                widget.drawer_key();
+                              },
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Icon(
+                                    Icons.notes,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
                             Expanded(
                               child: TextFormField(
                                 autofocus: false,
                                 obscureText: false,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ),
                                 decoration: InputDecoration(
                                   isDense: true,
                                   labelText: 'Search Aura',
@@ -99,23 +123,18 @@ class _ExplorePageState extends State<ExplorePage> {
                                   filled: true,
                                   fillColor: Colors.white,
                                   prefixIcon: GestureDetector(
-                                    onTap: () {
-                                      widget.drawer_key();
-                                    },
-                                    child: Icon(
-                                      Icons.notes,
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                      size: 24,
+                                    onTap: () {},
+                                    child: const Icon(
+                                      Icons.search,
+                                      color: Colors.black,
                                     ),
                                   ),
                                   suffixIcon: GestureDetector(
                                     onTap: () {},
-                                    child: Icon(
-                                      Icons.search_sharp,
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                      // size: 24,
+                                    child: const Icon(
+                                      Icons.keyboard_voice,
+                                      color: Colors.black,
+                                      size: 24,
                                     ),
                                   ),
                                 ),
@@ -137,19 +156,25 @@ class _ExplorePageState extends State<ExplorePage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                               ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Icon(
-                                  Icons.keyboard_voice,
-                                  color: Colors.black,
-                                  size: 24,
+                              child: Padding(
+                                padding: const EdgeInsets.all(1),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/icon.jpg',
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-
                       Align(
                         alignment: const AlignmentDirectional(-1, 1),
                         child: Padding(
@@ -175,7 +200,6 @@ class _ExplorePageState extends State<ExplorePage> {
                           ),
                         ),
                       ),
-                      // Generated code for this Column Widget...
                       Align(
                         alignment: const AlignmentDirectional(1, 1),
                         child: Padding(
@@ -186,8 +210,6 @@ class _ExplorePageState extends State<ExplorePage> {
                             children: [
                               Card(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                                // color: FlutterFlowTheme.of(context)
-                                //     .secondaryBackground,
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(24),
@@ -205,8 +227,6 @@ class _ExplorePageState extends State<ExplorePage> {
                               ),
                               Card(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                                // color: FlutterFlowTheme.of(context)
-                                //     .secondaryBackground,
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(24),
