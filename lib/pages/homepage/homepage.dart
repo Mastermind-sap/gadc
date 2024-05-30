@@ -21,7 +21,7 @@ class _HomepageState extends State<Homepage> {
   bool isNavBarVisible = false;
 
   void openDrawer() {
-    _scaffoldKey.currentState!.openEndDrawer();
+    _scaffoldKey.currentState!.openDrawer();
   }
 
   void toggleNavBar() {
@@ -81,7 +81,7 @@ class _HomepageState extends State<Homepage> {
     return Scaffold(
       key: _scaffoldKey,
       // appBar: getAppBar(),
-      endDrawer: const CustomAppDrawer(),
+      drawer: const CustomAppDrawer(),
       body: getPage(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
