@@ -17,17 +17,15 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int currentBottomIndex = 0;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isNavBarVisible = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ValueNotifier<bool> isNavBarVisible = ValueNotifier<bool>(false);
 
   void openDrawer() {
     _scaffoldKey.currentState!.openDrawer();
   }
 
   void toggleNavBar() {
-    setState(() {
-      isNavBarVisible = !isNavBarVisible;
-    });
+    isNavBarVisible.value = !isNavBarVisible.value;
   }
 
   Widget getPage() {
@@ -80,13 +78,17 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      // appBar: getAppBar(),
       drawer: const CustomAppDrawer(),
       body: getPage(),
-      bottomNavigationBar: CustomBottomNavbar(
-        onTap: bottomNavigator,
-        selected: currentBottomIndex,
-        isVisible: isNavBarVisible,
+      bottomNavigationBar: ValueListenableBuilder<bool>(
+        valueListenable: isNavBarVisible,
+        builder: (context, value, child) {
+          return CustomBottomNavbar(
+            onTap: bottomNavigator,
+            selected: currentBottomIndex,
+            isVisible: value,
+          );
+        },
       ),
     );
   }
