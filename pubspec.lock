@@ -158,6 +158,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  flutter_map_animations:
+    dependency: "direct main"
+    description:
+      name: flutter_map_animations
+      sha256: e4b929632b43a7939ce07a7cdb05613abb25e1996c9767c16469d0cbb9e1c4a9
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   flutter_map_cancellable_tile_provider:
     dependency: "direct main"
     description:

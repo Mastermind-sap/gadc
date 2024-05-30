@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:gadc/functions/bottom_modal.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:gadc/functions/locate_me.dart';
-import 'package:gadc/functions/nav_status.dart';
+import 'package:gadc/functions/shared_pref/location.dart';
 import 'package:gadc/functions/show_toast.dart';
-import 'package:gadc/pages/test_page/test_page.dart';
+import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -17,153 +16,68 @@ class MapPage extends StatefulWidget {
   static const String routeName = "/homescreen";
 }
 
-class _MapPage extends State<MapPage> {
-  final MapController _mapController = MapController();
+class _MapPage extends State<MapPage> with TickerProviderStateMixin {
+  // final MapController _mapController = MapController();
+  double curr_lat = 0, curr_long = 0;
   LatLng _mapCenter = LatLng(0, 0);
+  late final _animatedMapController = AnimatedMapController(vsync: this);
+  final ValueNotifier<LatLng> _mapCenterNotifier =
+      ValueNotifier<LatLng>(LatLng(0, 0));
 
-  Widget map(double myLat, double myLong) {
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        cameraConstraint: CameraConstraint.contain(
-          bounds: LatLngBounds(
-            LatLng(-90, -180), // Southwest corner of the bounds
-            LatLng(90, 180), // Northeast corner of the bounds
-          ),
-        ),
-        keepAlive:
-            true, // so that it does not reset to initial position on changing pages
-        minZoom: 3.0,
-        maxZoom: 18.0,
-        enableScrollWheel: true, // Enable scroll wheel zoom
-        interactiveFlags: InteractiveFlag.pinchZoom |
-            InteractiveFlag.drag |
-            InteractiveFlag.doubleTapZoom |
-            InteractiveFlag.flingAnimation, // Use specific flags
-        initialCenter: LatLng(myLat, myLong),
-        initialZoom: 17.5,
-        backgroundColor: Colors.black45,
-        onMapReady: () {
-          // Get the initial map center when the map is ready
-          _updateMapCenter();
-        },
-        onPositionChanged: (MapPosition position, bool hasGesture) {
-          // Update map center whenever the position changes
-          _updateMapCenter();
-        },
-        onLongPress: (tapPosition, point) {
-          readNavStatus().then((navStatus) {
-            if (navStatus == true || navStatus == null) {
-              showOptionsBottomSheet(context);
-            }
-            // Uncomment this block if you want to navigate to another page
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => TestingPage(l: point),
-            //   ),
-            // );
-          });
-        },
-      ),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-          // errorImage: AssetImage(assetName), // set an image to load when map not load due to no network connection
-        ),
-        MarkerLayer(
-          markers: [
-            Marker(
-              point: const LatLng(24.7577, 92.7923),
-              width: 20,
-              height: 20,
-              child: Image.asset("assets/pin.png"),
-            ),
-            Marker(
-              point: LatLng(myLat, myLong),
-              width: 20,
-              height: 20,
-              child: Image.asset("assets/pin.png"),
-            ),
-          ],
-        )
-      ],
-    );
+  @override
+  void initState() {
+    super.initState();
+    _initializeMap();
   }
 
-  // write user last location in shared pref
-  void writeMyLastLocation(double lat, double long) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        'myLastLocation', <String>[lat.toString(), long.toString()]);
+  @override
+  void dispose() {
+    _animatedMapController.dispose();
+    super.dispose();
   }
 
-  Future<List<String>?> readMyLastLocation() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String>? temp = prefs.getStringList('myLastLocation');
-    return temp;
-  }
-
-  // Function to navigate to the current location
-  void navigateToCurrentLocation() async {
-    var location = await locateMe();
-    if (location != null) {
-      _mapController.move(LatLng(location.latitude, location.longitude), 17.5);
-    } else {
-      showToast("Unable to fetch current location.");
+  Future<void> _initializeMap() async {
+    List<String>? pastData = await readMyLastLocation();
+    if (pastData != null && pastData.length >= 2) {
+      curr_lat = double.tryParse(pastData[0]) ?? 0;
+      curr_long = double.tryParse(pastData[1]) ?? 0;
     }
+    _mapCenterNotifier.value = LatLng(curr_lat, curr_long);
   }
 
   // Function to update the map center
   void _updateMapCenter() {
-    LatLng center = _mapController.camera.center;
+    LatLng center = _animatedMapController.mapController.camera.center;
     _mapCenter = center;
-
-    showToast("Map Center: $center"); // Print the map center coordinates
   }
 
   @override
   Widget build(BuildContext context) {
-    // return map(widget.myLat, widget.myLong);
     return Stack(
       children: [
-        FutureBuilder(
-          future: locateMe(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // Future Builder to get the stored data
-              return FutureBuilder(
-                future: readMyLastLocation(),
-                builder: (context, snapshot) {
-                  double? lastLat = double.parse(snapshot.data?[0] ?? "-1");
-                  double? lastLong = double.parse(snapshot.data?[1] ?? "-1");
-
-                  // null safety checks
-                  if (lastLat == -1 && lastLong == -1) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  return Stack(
-                    children: [
-                      map(lastLat, lastLong),
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-            double currLat = snapshot.data!.latitude;
-            double currLong = snapshot.data!.longitude;
-
-            writeMyLastLocation(currLat, currLong);
-
-            // Implement to access the stored data
-            return map(currLat, currLong);
+        ValueListenableBuilder(
+          valueListenable: _mapCenterNotifier,
+          builder: (context, mapCenter, child) {
+            return map(
+                mapCenter.latitude,
+                mapCenter.longitude,
+                _animatedMapController.mapController,
+                _updateMapCenter,
+                context);
           },
+        ),
+        // to update the curr_loc
+        Visibility(
+          visible: false,
+          child: FutureBuilder(
+              future: locateMe(),
+              builder: (context, snapshot) {
+                // Update pref
+                showToast(snapshot.data!.latitude.toString());
+                writeMyLastLocation(
+                    snapshot.data!.latitude, snapshot.data!.longitude);
+                return Container();
+              }),
         ),
         Align(
           alignment: const AlignmentDirectional(1, 1),
@@ -174,9 +88,12 @@ class _MapPage extends State<MapPage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      navigateToCurrentLocation();
-                    });
+                    _animatedMapController.animateTo(
+                      dest: LatLng(curr_lat, curr_long),
+                      zoom: 17.5,
+                      rotation: 0,
+                      customId: null,
+                    );
                   },
                   child: Card(
                     clipBehavior: Clip.antiAliasWithSaveLayer,
