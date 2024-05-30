@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gadc/functions/nav_status.dart';
 
 import 'package:gadc/pages/map_page/map_page.dart';
 
@@ -17,6 +18,10 @@ class _ExplorePageState extends State<ExplorePage> {
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
+  void moveToCurrPos() {
+    setState(() {});
   }
 
   @override
@@ -182,6 +187,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           child: GestureDetector(
                             onTap: () {
                               widget.nav_key();
+                              writeNavStatus();
                             },
                             child: Card(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -200,61 +206,6 @@ class _ExplorePageState extends State<ExplorePage> {
                           ),
                         ),
                       ),
-                      Align(
-                        alignment: const AlignmentDirectional(1, 1),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              0, 0, 16, 16 * 4),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Card(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.my_location_rounded,
-                                    size: 36,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Card(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Icon(
-                                        Icons.create_rounded,
-                                        size: 36,
-                                      ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      Icon(
-                                        Icons.threed_rotation_rounded,
-                                        size: 36,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
                     ],
                   ),
                 ),
