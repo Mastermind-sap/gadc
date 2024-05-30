@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gadc/widgets/custom_app_bar/custom_app_bar.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
@@ -17,9 +18,16 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int currentBottomIndex = 0;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool isNavBarVisible = false;
 
   void openDrawer() {
-    _scaffoldKey.currentState!.openDrawer();
+    _scaffoldKey.currentState!.openEndDrawer();
+  }
+
+  void toggleNavBar() {
+    setState(() {
+      isNavBarVisible = !isNavBarVisible;
+    });
   }
 
   Widget getPage() {
@@ -27,6 +35,7 @@ class _HomepageState extends State<Homepage> {
       case 0:
         return ExplorePage(
           drawer_key: openDrawer,
+          nav_key: toggleNavBar,
         );
       case 1:
         return SpacePage();
@@ -35,6 +44,7 @@ class _HomepageState extends State<Homepage> {
       default:
         return ExplorePage(
           drawer_key: openDrawer,
+          nav_key: toggleNavBar,
         );
     }
   }
@@ -71,11 +81,12 @@ class _HomepageState extends State<Homepage> {
     return Scaffold(
       key: _scaffoldKey,
       // appBar: getAppBar(),
-      drawer: const CustomAppDrawer(),
+      endDrawer: const CustomAppDrawer(),
       body: getPage(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
         selected: currentBottomIndex,
+        isVisible: isNavBarVisible,
       ),
     );
   }
