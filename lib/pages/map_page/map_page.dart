@@ -11,7 +11,7 @@ class MapPage extends StatefulWidget {
   @override
   State<MapPage> createState() => _MapPage();
 
-  static const String routeName = "/homescreen";
+  static const String routeName = "/mappage";
 }
 
 class _MapPage extends State<MapPage> with TickerProviderStateMixin {
