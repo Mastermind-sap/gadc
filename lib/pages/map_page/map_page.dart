@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
-import 'package:gadc/functions/locate_me.dart';
 import 'package:gadc/functions/shared_pref/location.dart';
-import 'package:gadc/functions/show_toast.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:async';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -23,26 +21,65 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
   late final _animatedMapController = AnimatedMapController(vsync: this);
   final ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(LatLng(0, 0));
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _initializeMap();
+    _startLocationUpdates();
   }
 
   @override
   void dispose() {
     _animatedMapController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
   Future<void> _initializeMap() async {
     List<String>? pastData = await readMyLastLocation();
+    bool animateToNewPos = false;
+    if (curr_lat == 0 && curr_long == 0) {
+      animateToNewPos = true;
+    }
     if (pastData != null && pastData.length >= 2) {
       curr_lat = double.tryParse(pastData[0]) ?? 0;
       curr_long = double.tryParse(pastData[1]) ?? 0;
     }
     _mapCenterNotifier.value = LatLng(curr_lat, curr_long);
+    if (animateToNewPos) {
+      _animatedMapController.animateTo(
+        dest: LatLng(curr_lat, curr_long),
+        zoom: 17.5,
+        rotation: 0,
+        customId: null,
+      );
+      animateToNewPos = false;
+    }
+  }
+
+  void _startLocationUpdates() {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+      List<String>? newData = await readMyLastLocation();
+      if (newData != null && newData.length >= 2) {
+        double newLat = double.tryParse(newData[0]) ?? 0;
+        double newLong = double.tryParse(newData[1]) ?? 0;
+        if (newLat != curr_lat || newLong != curr_long) {
+          // setState(() {
+          curr_lat = newLat;
+          curr_long = newLong;
+          _mapCenterNotifier.value = LatLng(curr_lat, curr_long);
+          // });
+          _animatedMapController.animateTo(
+            dest: LatLng(curr_lat, curr_long),
+            zoom: 17.5,
+            rotation: 0,
+            customId: null,
+          );
+        }
+      }
+    });
   }
 
   // Function to update the map center
@@ -59,25 +96,13 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
           valueListenable: _mapCenterNotifier,
           builder: (context, mapCenter, child) {
             return map(
-                mapCenter.latitude,
-                mapCenter.longitude,
-                _animatedMapController.mapController,
-                _updateMapCenter,
-                context);
+              mapCenter.latitude,
+              mapCenter.longitude,
+              _animatedMapController.mapController,
+              _updateMapCenter,
+              context,
+            );
           },
-        ),
-        // to update the curr_loc
-        Visibility(
-          visible: false,
-          child: FutureBuilder(
-              future: locateMe(),
-              builder: (context, snapshot) {
-                // Update pref
-                showToast(snapshot.data!.latitude.toString());
-                writeMyLastLocation(
-                    snapshot.data!.latitude, snapshot.data!.longitude);
-                return Container();
-              }),
         ),
         Align(
           alignment: const AlignmentDirectional(1, 1),

@@ -37,30 +37,13 @@ class _ExplorePageState extends State<ExplorePage> {
             child: Align(
               alignment: const AlignmentDirectional(0, -1),
               child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Container(
+                padding: const EdgeInsets.all(0),
+                child: SizedBox(
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).secondaryHeaderColor,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(0),
-                      bottomRight: Radius.circular(24),
-                      topLeft: Radius.circular(0),
-                      topRight: Radius.circular(0),
-                    ),
-                  ),
                   child: Stack(
                     children: [
-                      const ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(0),
-                          bottomRight: Radius.circular(24),
-                          topLeft: Radius.circular(0),
-                          topRight: Radius.circular(0),
-                        ),
-                        child: MapPage(),
-                      ),
+                      const MapPage(),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 48, 8, 0),
                         child: Row(
