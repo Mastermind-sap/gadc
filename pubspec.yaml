@@ -38,6 +38,14 @@ dependencies:
   lottie: ^3.1.2
   flutter_unity_widget: ^2022.2.1
   flutter_launcher_icons: ^0.13.1
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+  flutter_map_cancellable_tile_provider: ^2.0.0
+  geolocator: ^12.0.0
+  shared_preferences: ^2.2.3
+  fluttertoast: ^8.2.5
+  flutter_map_animations: ^0.6.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +76,10 @@ flutter:
   assets:
     - assets/splash_screen.json
     - assets/icon.jpg
+    - assets/pin.png
+    - assets/loading_gradient.json
+    - assets/ai_lottie.json
+    - assets/user_loc.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -80,12 +92,12 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: aura
+      fonts:
+        - asset: assets/fonts/Hind-SemiBold.ttf
+        - asset: assets/fonts/Hind-SemiBold.ttf
+          style: italic
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

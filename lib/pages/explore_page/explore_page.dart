@@ -1,7 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/nav_status.dart';
 
-class ExplorePage extends StatelessWidget {
-  const ExplorePage({super.key});
+import 'package:gadc/pages/map_page/map_page.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
+
+class ExplorePage extends StatefulWidget {
+  final VoidCallback drawer_key;
+  const ExplorePage({super.key, required this.drawer_key});
+
+  @override
+  _ExplorePageState createState() => _ExplorePageState();
+}
+
+class _ExplorePageState extends State<ExplorePage> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
+  void navigateToTestingPage(BuildContext context) {
+    Navigator.of(context).push(
+      fromBottomRoute(const NavigationPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,117 +36,165 @@ class ExplorePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(0),
             child: Align(
               alignment: const AlignmentDirectional(0, -1),
               child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Container(
+                padding: const EdgeInsets.all(0),
+                child: SizedBox(
                   width: double.infinity,
-                  height: 600,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).secondaryHeaderColor,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(0),
-                      bottomRight: Radius.circular(24),
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
-                    ),
-                  ),
+                  height: MediaQuery.of(context).size.height,
                   child: Stack(
                     children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(0),
-                          bottomRight: Radius.circular(24),
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
-                        ),
-                        child: Image.network(
-                          'https://www.thestatesman.com/wp-content/uploads/2020/04/googl_ED.jpg',
-                          width: double.infinity,
-                          height: 600,
-                          fit: BoxFit.cover,
+                      const MapPage(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 48, 8, 0),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                widget.drawer_key();
+                              },
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Icon(
+                                    Icons.notes,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                autofocus: false,
+                                obscureText: false,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ),
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  labelText: 'Search Aura',
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  prefixIcon: GestureDetector(
+                                    onTap: () {},
+                                    child: const Icon(
+                                      Icons.search,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {},
+                                    child: const Icon(
+                                      Icons.keyboard_voice,
+                                      color: Colors.black,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter some text';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            Card(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              color: Colors.white,
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(1),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/icon.jpg',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 32, 8, 32),
-                        child: TextFormField(
-                          autofocus: false,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            labelText: 'Search Aura',
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
-                                width: 2,
+                      Align(
+                        alignment: const AlignmentDirectional(-1, 1),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
+                          child: GestureDetector(
+                            onTap: () {
+                              navigateToTestingPage(context);
+                            },
+                            child: Card(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                                width: 2,
+                              child: const Padding(
+                                padding: EdgeInsets.all(4),
+                                child: Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 24,
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            errorBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            focusedErrorBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            filled: true,
-                            prefixIcon: Icon(
-                              Icons.notes,
-                              color: Theme.of(context).secondaryHeaderColor,
-                            ),
-                            suffixIcon: Icon(
-                              Icons.search_sharp,
-                              color: Theme.of(context).secondaryHeaderColor,
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter some text';
-                            }
-                            return null;
-                          },
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(8),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Align(
-                  alignment: AlignmentDirectional(-1, 0),
-                  child: Text(
-                    'EXPLORE',
-                    style: TextStyle(
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 24,
-                ),
-              ],
             ),
           ),
         ],
