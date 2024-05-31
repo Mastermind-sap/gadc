@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class CustomAppDrawer extends StatefulWidget {
   final List<Map<String, String>>? drawerItems;
@@ -8,11 +9,32 @@ class CustomAppDrawer extends StatefulWidget {
   State<CustomAppDrawer> createState() => _CustomAppDrawerState();
 }
 
-class _CustomAppDrawerState extends State<CustomAppDrawer> {
+class _CustomAppDrawerState extends State<CustomAppDrawer>
+    with WidgetsBindingObserver {
+  bool _isKeyboardVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = bottomInset > 0.0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Get the amount of space occupied by the keyboard
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Drawer(
@@ -22,183 +44,219 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
               150, 255, 255, 255), // Light mode drawer color,
       child: Padding(
         // Adjust the padding of the drawer to move it up when the keyboard is visible
-        padding: EdgeInsets.only(bottom: bottomInset),
+        padding: EdgeInsets.only(
+            bottom: _isKeyboardVisible
+                ? MediaQuery.of(context).viewInsets.bottom
+                : 0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
+              child: Align(
+                alignment: Alignment.center,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Column(
                       mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: AlignmentDirectional(-1, 0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Align(
-                                alignment: AlignmentDirectional(1, 1),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16, 0, 8, 0),
-                                  child: Text(
-                                    'A\nU\nR\nA',
-                                    style: TextStyle(
-                                        fontSize: 32, fontFamily: "aura"),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 175,
-                                child: VerticalDivider(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                  thickness: 1,
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                mainAxisSize: MainAxisSize.max,
+                        Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: const AlignmentDirectional(-1, 0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Align(
-                                    alignment:
-                                        const AlignmentDirectional(-1, 0),
-                                    child: Icon(
-                                      Icons.location_on,
-                                      size: 36,
-                                      color: isDarkMode
-                                          ? Colors.black
-                                          : Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0, 0, 0, 4),
-                                    child: Text(
-                                      'EXPLORE',
-                                      style: TextStyle(
-                                        fontSize: 36,
+                                  const Align(
+                                    alignment: AlignmentDirectional(1, 1),
+                                    child: Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          16, 0, 8, 0),
+                                      child: Text(
+                                        'A\nU\nR\nA',
+                                        style: TextStyle(
+                                            fontSize: 32, fontFamily: "aura"),
                                       ),
                                     ),
                                   ),
-                                  const Text(
-                                    '26.1158, 91.7086',
-                                    style: TextStyle(
-                                      fontSize: 20,
+                                  SizedBox(
+                                    height: 175,
+                                    child: VerticalDivider(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                      thickness: 1,
                                     ),
                                   ),
-                                  const Text(
-                                    'Guwahati',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                    ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Align(
+                                        alignment:
+                                            const AlignmentDirectional(-1, 0),
+                                        child: Icon(
+                                          Icons.location_on,
+                                          size: 36,
+                                          color: isDarkMode
+                                              ? Colors.black
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            0, 0, 0, 4),
+                                        child: Text(
+                                          'EXPLORE',
+                                          style: TextStyle(
+                                            fontSize: 36,
+                                          ),
+                                        ),
+                                      ),
+                                      const Text(
+                                        '26.1158, 91.7086',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Guwahati',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Align(
-                                alignment: AlignmentDirectional(-1, 0),
-                                child: Text(
-                                  'Gaurav',
-                                  style: TextStyle(
-                                    fontSize: 36,
-                                  ),
+                        // later add other things here
+                        const SizedBox(
+                          height: 16 * 2,
+                        ),
+                        (_isKeyboardVisible)
+                            ? Align(
+                                alignment: Alignment.topCenter,
+                                child: Lottie.asset(
+                                  "assets/ai_lottie.json",
+                                  frameRate: const FrameRate(120),
+                                  repeat: true,
+                                  height: 150,
+                                ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16, 0, 16, 16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Align(
+                                          alignment:
+                                              AlignmentDirectional(-1, 0),
+                                          child: Text(
+                                            'Gaurav',
+                                            style: TextStyle(
+                                              fontSize: 36,
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          clipBehavior: Clip.antiAlias,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Image.asset(
+                                            'assets/icon.jpg',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    const Align(
+                                      alignment: AlignmentDirectional(-1, 0),
+                                      child: Text(
+                                        '• Favs',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    const Align(
+                                      alignment: AlignmentDirectional(-1, 0),
+                                      child: Text(
+                                        '• Recent',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    const Align(
+                                      alignment: AlignmentDirectional(-1, 0),
+                                      child: Text(
+                                        '• FeedBack',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    const Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(
+                                          Icons.home_rounded,
+                                          size: 36,
+                                        ),
+                                        Icon(
+                                          Icons.location_city,
+                                          size: 36,
+                                        ),
+                                        Icon(
+                                          Icons.info_outline_rounded,
+                                          size: 36,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Icon(
-                                Icons.person,
-                                size: 36,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Align(
-                            alignment: AlignmentDirectional(-1, 0),
-                            child: Text(
-                              '• Favs',
-                              style: TextStyle(
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Align(
-                            alignment: AlignmentDirectional(-1, 0),
-                            child: Text(
-                              '• Recent',
-                              style: TextStyle(
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Align(
-                            alignment: AlignmentDirectional(-1, 0),
-                            child: Text(
-                              '• FeedBack',
-                              style: TextStyle(
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Icon(
-                                Icons.home_rounded,
-                                size: 36,
-                              ),
-                              Icon(
-                                Icons.location_city,
-                                size: 36,
-                              ),
-                              Icon(
-                                Icons.info_outline_rounded,
-                                size: 36,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -231,8 +289,8 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
                         borderRadius: BorderRadius.circular(24),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                        borderSide: const BorderSide(
+                          color: Colors.white,
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(24),
@@ -252,18 +310,7 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
                 ],
               ),
             ),
-            // for AI Animation
-            // Align(
-            //   alignment: AlignmentDirectional(-1, 1),
-            //   child: Lottie.asset(
-            //     'assets/loading_gradient.json',
-            //     width: 100,
-            //     height: 100,
-            //     fit: BoxFit.cover,
-            //     frameRate: const FrameRate(144),
-            //     animate: true,
-            //   ),
-            // ),
+            // for AI Animation, bottom and top if required
           ],
         ),
       ),
