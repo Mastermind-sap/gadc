@@ -41,7 +41,7 @@ class LocationService {
         distanceFilter: 50, // Update every 10 meters
       ),
     ).listen((Position position) {
-      showToast(position.latitude.toString());
+      // showToast(position.latitude.toString());
       writeMyLastLocation(position.latitude, position.longitude);
     });
   }

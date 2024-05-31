@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gadc/functions/bottom_modal.dart';
 import 'package:gadc/functions/nav_status.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:latlong2/latlong.dart';
 
-Widget map(double myLat, double myLong, MapController mapController,
+Widget map(double? myLat, double? myLong, MapController mapController,
     Function updateMapCenter, BuildContext context) {
+  double zoom = 17.5;
+  if (myLat == null || myLong == null) {
+    myLat = 21.0000;
+    myLong = 78.0000;
+    zoom = 5;
+  }
   return FlutterMap(
     mapController: mapController,
     options: MapOptions(
@@ -25,7 +32,7 @@ Widget map(double myLat, double myLong, MapController mapController,
           InteractiveFlag.doubleTapZoom |
           InteractiveFlag.flingAnimation, // Use specific flags
       initialCenter: LatLng(myLat, myLong),
-      initialZoom: 17.5,
+      initialZoom: zoom,
       backgroundColor: Colors.black45,
       onMapReady: () {
         // Get the initial map center when the map is ready
@@ -40,12 +47,6 @@ Widget map(double myLat, double myLong, MapController mapController,
           if (navStatus == true || navStatus == null) {
             showOptionsBottomSheet(context);
           }
-          // Uncomment this block if you want to navigate to another page
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => TestingPage(l: point),
-          //   ),
-          // );
         });
       },
     ),
@@ -63,6 +64,7 @@ Widget map(double myLat, double myLong, MapController mapController,
             height: 20,
             child: Image.asset("assets/pin.png"),
           ),
+          // My Location
           Marker(
             point: LatLng(myLat, myLong),
             width: 20,

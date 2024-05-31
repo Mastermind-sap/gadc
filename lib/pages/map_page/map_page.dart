@@ -107,7 +107,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
         Align(
           alignment: const AlignmentDirectional(1, 1),
           child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 16, 16 * 4),
+            padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 16, 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

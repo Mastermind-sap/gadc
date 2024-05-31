@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/nav_status.dart';
 
 import 'package:gadc/pages/map_page/map_page.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
 
 class ExplorePage extends StatefulWidget {
-  final VoidCallback drawer_key, nav_key;
-  const ExplorePage(
-      {super.key, required this.drawer_key, required this.nav_key});
+  final VoidCallback drawer_key;
+  const ExplorePage({super.key, required this.drawer_key});
 
   @override
   _ExplorePageState createState() => _ExplorePageState();
@@ -20,8 +21,10 @@ class _ExplorePageState extends State<ExplorePage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
 
-  void moveToCurrPos() {
-    setState(() {});
+  void navigateToTestingPage(BuildContext context) {
+    Navigator.of(context).push(
+      fromBottomRoute(const NavigationPage()),
+    );
   }
 
   @override
@@ -166,11 +169,10 @@ class _ExplorePageState extends State<ExplorePage> {
                       Align(
                         alignment: const AlignmentDirectional(-1, 1),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 0, 16 * 4),
+                          padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                           child: GestureDetector(
                             onTap: () {
-                              widget.nav_key();
-                              writeNavStatus();
+                              navigateToTestingPage(context);
                             },
                             child: Card(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
