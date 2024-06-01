@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:gadc/functions/shared_pref/location.dart';
-import 'package:gadc/services/location_service.dart';
 
 import 'pages/pages.dart';
 
@@ -17,13 +14,9 @@ class GADC extends StatefulWidget {
 }
 
 class _GADCState extends State<GADC> {
-  final LocationService _locationService = LocationService();
-
   @override
   void initState() {
     super.initState();
-    writeMyLastLocation(0, 0);
-    _locationService.startLocationUpdates();
   }
 
   @override

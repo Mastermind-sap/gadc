@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:gadc/functions/shared_pref/location.dart';
+import 'package:gadc/functions/show_toast.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 
@@ -15,19 +17,16 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPage extends State<MapPage> with TickerProviderStateMixin {
-  // final MapController _mapController = MapController();
-  double curr_lat = 0, curr_long = 0;
-  LatLng _mapCenter = LatLng(0, 0);
+  double currLat = 21, currLong = 78; // default location coordinates of India
   late final _animatedMapController = AnimatedMapController(vsync: this);
-  final ValueNotifier<LatLng> _mapCenterNotifier =
-      ValueNotifier<LatLng>(LatLng(0, 0));
+  ValueNotifier<LatLng> _mapCenterNotifier =
+      ValueNotifier<LatLng>(const LatLng(21, 78));
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _initializeMap();
-    _startLocationUpdates();
+    startLocationUpdates();
   }
 
   @override
@@ -37,73 +36,90 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _initializeMap() async {
-    List<String>? pastData = await readMyLastLocation();
-    bool animateToNewPos = false;
-    if (curr_lat == 0 && curr_long == 0) {
-      animateToNewPos = true;
-    }
-    if (pastData != null && pastData.length >= 2) {
-      curr_lat = double.tryParse(pastData[0]) ?? 0;
-      curr_long = double.tryParse(pastData[1]) ?? 0;
-    }
-    _mapCenterNotifier.value = LatLng(curr_lat, curr_long);
-    if (animateToNewPos) {
-      _animatedMapController.animateTo(
-        dest: LatLng(curr_lat, curr_long),
-        zoom: 17.5,
-        rotation: 0,
-        customId: null,
-      );
-      animateToNewPos = false;
-    }
-  }
+  Future<void> startLocationUpdates() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  void _startLocationUpdates() {
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
-      List<String>? newData = await readMyLastLocation();
-      if (newData != null && newData.length >= 2) {
-        double newLat = double.tryParse(newData[0]) ?? 0;
-        double newLong = double.tryParse(newData[1]) ?? 0;
-        if (newLat != curr_lat || newLong != curr_long) {
-          // setState(() {
-          curr_lat = newLat;
-          curr_long = newLong;
-          _mapCenterNotifier.value = LatLng(curr_lat, curr_long);
-          // });
-          _animatedMapController.animateTo(
-            dest: LatLng(curr_lat, curr_long),
-            zoom: 17.5,
-            rotation: 0,
-            customId: null,
-          );
-        }
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
       }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+    Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 1, // Update every 10 meters
+      ),
+    ).listen((Position position) {
+      showToast(position.latitude.toString());
+      // write the latitute and longitude to map center notifier
+      _mapCenterNotifier.value = LatLng(position.latitude, position.longitude);
+      // update last location
+      writeMyLastLocation(position.latitude, position.longitude);
     });
   }
 
-  // Function to update the map center
-  void _updateMapCenter() {
-    LatLng center = _animatedMapController.mapController.camera.center;
-    _mapCenter = center;
+  // to get the center coordinates of the map, (will come to use in reverse geo-coding)
+  LatLng _updateMapCenter() {
+    return _animatedMapController.mapController.camera.center;
+  }
+
+  void animateMapView(double lat, double long) {
+    _animatedMapController.animateTo(
+      dest: LatLng(lat, long),
+      zoom: 17.5,
+      rotation: 0,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ValueListenableBuilder(
-          valueListenable: _mapCenterNotifier,
-          builder: (context, mapCenter, child) {
-            return map(
-              mapCenter.latitude,
-              mapCenter.longitude,
-              _animatedMapController.mapController,
-              _updateMapCenter,
-              context,
-            );
-          },
-        ),
+        FutureBuilder(
+            future: readMyLastLocation(),
+            builder: (context, snapshot) {
+              // if past location data exists set that location initially
+              if (snapshot.data != null) {
+                _mapCenterNotifier = ValueNotifier<LatLng>(
+                  LatLng(
+                    double.parse(snapshot.data![0]),
+                    double.parse(snapshot.data![1]),
+                  ),
+                );
+                animateMapView(double.parse(snapshot.data![0]),
+                    double.parse(snapshot.data![1]));
+              }
+
+              return ValueListenableBuilder<LatLng>(
+                valueListenable: _mapCenterNotifier,
+                builder: (context, mapCenter, child) {
+                  currLat = mapCenter.latitude;
+                  currLong = mapCenter.longitude;
+
+                  return map(
+                    currLat,
+                    currLong,
+                    _animatedMapController.mapController,
+                    _updateMapCenter,
+                    context,
+                    17.5,
+                  );
+                },
+              );
+            }),
         Align(
           alignment: const AlignmentDirectional(1, 1),
           child: Padding(
@@ -114,10 +130,9 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                 GestureDetector(
                   onTap: () {
                     _animatedMapController.animateTo(
-                      dest: LatLng(curr_lat, curr_long),
+                      dest: LatLng(currLat, currLong),
                       zoom: 17.5,
                       rotation: 0,
-                      customId: null,
                     );
                   },
                   child: Card(
@@ -135,9 +150,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 8,
-                ),
+                const SizedBox(height: 8),
                 Card(
                   clipBehavior: Clip.antiAliasWithSaveLayer,
                   elevation: 4,
@@ -153,9 +166,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                           Icons.create_rounded,
                           size: 36,
                         ),
-                        SizedBox(
-                          height: 16,
-                        ),
+                        SizedBox(height: 16),
                         Icon(
                           Icons.threed_rotation_rounded,
                           size: 36,
