@@ -14,10 +14,10 @@ class NavigationPage extends StatefulWidget {
   });
 
   @override
-  State<NavigationPage> createState() => _TestingPageState();
+  State<NavigationPage> createState() => _NavigationPage();
 }
 
-class _TestingPageState extends State<NavigationPage> {
+class _NavigationPage extends State<NavigationPage> {
   int currentBottomIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
