@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:gadc/widgets/custom_app_bar/custom_app_bar.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
+import '../../controllers/global_notifiers.dart';
 import '../pages.dart';
 
 class Homepage extends StatefulWidget {
@@ -18,11 +17,6 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int currentBottomIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final ValueNotifier<bool> isNavBarVisible = ValueNotifier<bool>(false);
-
-  void openDrawer() {
-    _scaffoldKey.currentState!.openDrawer();
-  }
 
   void toggleNavBar() {
     isNavBarVisible.value = !isNavBarVisible.value;
@@ -32,7 +26,8 @@ class _HomepageState extends State<Homepage> {
     switch (currentBottomIndex) {
       case 0:
         return ExplorePage(
-          drawer_key: openDrawer,
+          drawerKey: _scaffoldKey,
+          toggleNavBar: toggleNavBar,
         );
       case 1:
         return SpacePage();
@@ -40,28 +35,8 @@ class _HomepageState extends State<Homepage> {
         return CreatePage();
       default:
         return ExplorePage(
-          drawer_key: openDrawer,
-        );
-    }
-  }
-
-  PreferredSizeWidget getAppBar() {
-    switch (currentBottomIndex) {
-      case 0:
-        return const CustomAppBar(
-          subtitle: "Explore",
-        );
-      case 1:
-        return const CustomAppBar(
-          subtitle: "3D",
-        );
-      case 2:
-        return const CustomAppBar(
-          subtitle: "Create",
-        );
-      default:
-        return const CustomAppBar(
-          subtitle: "Explore",
+          drawerKey: _scaffoldKey,
+          toggleNavBar: toggleNavBar,
         );
     }
   }
@@ -84,7 +59,7 @@ class _HomepageState extends State<Homepage> {
           return CustomBottomNavbar(
             onTap: bottomNavigator,
             selected: currentBottomIndex,
-            isVisible: false,
+            isVisible: value,
           );
         },
       ),

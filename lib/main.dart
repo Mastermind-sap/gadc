@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gadc/functions/shared_pref/location.dart';
 import 'package:gadc/services/location_service.dart';
 
@@ -13,7 +12,7 @@ class GADC extends StatefulWidget {
   const GADC({super.key});
 
   @override
-  _GADCState createState() => _GADCState();
+  State<GADC> createState() => _GADCState();
 }
 
 class _GADCState extends State<GADC> {
