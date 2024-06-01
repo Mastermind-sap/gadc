@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gadc/pages/profile_page/profile_page.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
@@ -34,10 +35,7 @@ class _HomepageState extends State<Homepage> {
       case 2:
         return CreatePage();
       default:
-        return ExplorePage(
-          drawerKey: _scaffoldKey,
-          toggleNavBar: toggleNavBar,
-        );
+        return ProfilePage();
     }
   }
 
@@ -55,14 +53,16 @@ class _HomepageState extends State<Homepage> {
         return const CustomAppDrawer(
           pageName: 'CREATE',
         );
+      case 3:
+        return const CustomAppDrawer(
+          pageName: 'PROFILE',
+        );
       default:
         return const CustomAppDrawer(
-          pageName: 'EXPLORE',
+          pageName: 'Error',
         );
     }
   }
-
-  
 
   void bottomNavigator(int index) {
     setState(() {

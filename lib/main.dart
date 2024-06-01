@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gadc/functions/shared_pref/location.dart';
-import 'package:gadc/services/location_service.dart';
 
 import 'pages/pages.dart';
 
