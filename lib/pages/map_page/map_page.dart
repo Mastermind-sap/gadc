@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:gadc/functions/shared_pref/location.dart';
-import 'package:gadc/functions/show_toast.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -154,6 +153,9 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                     );
                   },
                   child: Card(
+                    color: (Theme.of(context).brightness == Brightness.dark)
+                        ? const Color.fromARGB(255, 29, 36, 40)
+                        : Colors.white,
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -170,6 +172,9 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 8),
                 Card(
+                  color: (Theme.of(context).brightness == Brightness.dark)
+                      ? const Color.fromARGB(255, 29, 36, 40)
+                      : Colors.white,
                   clipBehavior: Clip.antiAliasWithSaveLayer,
                   elevation: 4,
                   shape: RoundedRectangleBorder(

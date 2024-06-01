@@ -59,6 +59,27 @@ class _NavigationPage extends State<NavigationPage> {
     }
   }
 
+  Widget getDrawer() {
+    switch (currentBottomIndex) {
+      case 0:
+        return const CustomAppDrawer(
+          pageName: 'EXPLORE',
+        );
+      case 1:
+        return const CustomAppDrawer(
+          pageName: '3D',
+        );
+      case 2:
+        return const CustomAppDrawer(
+          pageName: 'CREATE',
+        );
+      default:
+        return const CustomAppDrawer(
+          pageName: 'EXPLORE',
+        );
+    }
+  }
+
   void bottomNavigator(int index) {
     setState(() {
       currentBottomIndex = index;
@@ -68,7 +89,7 @@ class _NavigationPage extends State<NavigationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomAppDrawer(),
+      drawer: getDrawer(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
         selected: currentBottomIndex,
