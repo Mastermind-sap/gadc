@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class CustomAppDrawer extends StatefulWidget {
-  final List<Map<String, String>>? drawerItems;
-  const CustomAppDrawer({super.key, this.drawerItems});
+  final String pageName;
+  const CustomAppDrawer({super.key, required this.pageName});
 
   @override
   State<CustomAppDrawer> createState() => _CustomAppDrawerState();
@@ -115,12 +115,12 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                                       const SizedBox(
                                         height: 8,
                                       ),
-                                      const Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            0, 0, 0, 4),
+                                      Padding(
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(0, 0, 0, 4),
                                         child: Text(
-                                          'EXPLORE',
-                                          style: TextStyle(
+                                          widget.pageName,
+                                          style: const TextStyle(
                                             fontSize: 36,
                                           ),
                                         ),

@@ -45,6 +45,27 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
+  Widget getDrawer() {
+    switch (currentBottomIndex) {
+      case 0:
+        return const CustomAppDrawer(
+          pageName: 'EXPLORE',
+        );
+      case 1:
+        return const CustomAppDrawer(
+          pageName: '3D',
+        );
+      case 2:
+        return const CustomAppDrawer(
+          pageName: 'CREATE',
+        );
+      default:
+        return const CustomAppDrawer(
+          pageName: 'EXPLORE',
+        );
+    }
+  }
+
   PreferredSizeWidget getAppBar() {
     switch (currentBottomIndex) {
       case 0:
@@ -76,7 +97,7 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: const CustomAppDrawer(),
+      drawer: getDrawer(),
       body: getPage(),
       bottomNavigationBar: ValueListenableBuilder<bool>(
         valueListenable: isNavBarVisible,

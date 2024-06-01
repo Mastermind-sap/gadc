@@ -32,7 +32,9 @@ Widget map(double myLat, double myLong, MapController mapController,
               InteractiveFlag.flingAnimation, // Use specific flags
           initialCenter: LatLng(myLat, myLong),
           initialZoom: zoom,
-          backgroundColor: Colors.black45,
+          backgroundColor: (Theme.of(context).brightness == Brightness.dark)
+              ? Colors.black
+              : Colors.white,
           onMapReady: () {
             // Get the initial map center when the map is ready
             updateMapCenter();

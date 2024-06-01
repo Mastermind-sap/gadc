@@ -57,7 +57,10 @@ class _ExplorePageState extends State<ExplorePage> {
                               },
                               child: Card(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: Colors.white,
+                                color: (Theme.of(context).brightness ==
+                                        Brightness.dark)
+                                    ? const Color.fromARGB(255, 29, 36, 40)
+                                    : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -65,7 +68,6 @@ class _ExplorePageState extends State<ExplorePage> {
                                   padding: EdgeInsets.all(8),
                                   child: Icon(
                                     Icons.notes,
-                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -78,8 +80,8 @@ class _ExplorePageState extends State<ExplorePage> {
                                 autofocus: false,
                                 obscureText: false,
                                 style: const TextStyle(
-                                  color: Colors.black,
-                                ),
+                                    // color: Colors.black,
+                                    ),
                                 decoration: InputDecoration(
                                   isDense: true,
                                   labelText: 'Search Aura',
@@ -112,19 +114,20 @@ class _ExplorePageState extends State<ExplorePage> {
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   filled: true,
-                                  fillColor: Colors.white,
+                                  fillColor: (Theme.of(context).brightness ==
+                                          Brightness.dark)
+                                      ? const Color.fromARGB(255, 29, 36, 40)
+                                      : Colors.white,
                                   prefixIcon: GestureDetector(
                                     onTap: () {},
                                     child: const Icon(
                                       Icons.search,
-                                      color: Colors.black,
                                     ),
                                   ),
                                   suffixIcon: GestureDetector(
                                     onTap: () {},
                                     child: const Icon(
                                       Icons.keyboard_voice,
-                                      color: Colors.black,
                                       size: 24,
                                     ),
                                   ),
@@ -142,7 +145,10 @@ class _ExplorePageState extends State<ExplorePage> {
                             ),
                             Card(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: Colors.white,
+                              color: (Theme.of(context).brightness ==
+                                      Brightness.dark)
+                                  ? const Color.fromARGB(255, 29, 36, 40)
+                                  : Colors.white,
                               elevation: 4,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
@@ -175,6 +181,10 @@ class _ExplorePageState extends State<ExplorePage> {
                               navigateToTestingPage(context);
                             },
                             child: Card(
+                              color: (Theme.of(context).brightness ==
+                                      Brightness.dark)
+                                  ? const Color.fromARGB(255, 29, 36, 40)
+                                  : Colors.white,
                               clipBehavior: Clip.antiAliasWithSaveLayer,
                               elevation: 4,
                               shape: RoundedRectangleBorder(
