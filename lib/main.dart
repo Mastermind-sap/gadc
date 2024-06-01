@@ -16,13 +16,9 @@ class GADC extends StatefulWidget {
 }
 
 class _GADCState extends State<GADC> {
-  final LocationService _locationService = LocationService();
-
   @override
   void initState() {
     super.initState();
-    writeMyLastLocation(0, 0);
-    _locationService.startLocationUpdates();
   }
 
   @override
