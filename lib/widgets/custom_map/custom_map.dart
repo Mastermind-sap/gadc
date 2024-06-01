@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gadc/functions/bottom_modal.dart';
 import 'package:gadc/functions/nav_status.dart';
-import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:latlong2/latlong.dart';
 
 Widget map(double? myLat, double? myLong, MapController mapController,
