@@ -18,6 +18,8 @@ class MapPage extends StatefulWidget {
 
 class _MapPage extends State<MapPage> with TickerProviderStateMixin {
   double currLat = 21, currLong = 78; // default location coordinates of India
+  bool firstTimeStart =
+      false; // to set zoom and animation for 1st time initialization of the map
   late final _animatedMapController = AnimatedMapController(vsync: this);
   ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(const LatLng(21, 78));
@@ -60,14 +62,16 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
     Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 1, // Update every 10 meters
+        distanceFilter: 10, // Update every 10 meters
       ),
     ).listen((Position position) {
-      showToast(position.latitude.toString());
-      // write the latitute and longitude to map center notifier
-      _mapCenterNotifier.value = LatLng(position.latitude, position.longitude);
-      // update last location
-      writeMyLastLocation(position.latitude, position.longitude);
+      _mapCenterNotifier.value = LatLng(
+          position.latitude,
+          position
+              .longitude); // write the latitute and longitude to map center notifier
+
+      writeMyLastLocation(
+          position.latitude, position.longitude); // update last location
     });
   }
 
@@ -101,6 +105,8 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                 );
                 animateMapView(double.parse(snapshot.data![0]),
                     double.parse(snapshot.data![1]));
+              } else {
+                firstTimeStart = true;
               }
 
               return ValueListenableBuilder<LatLng>(
@@ -108,6 +114,18 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
                 builder: (context, mapCenter, child) {
                   currLat = mapCenter.latitude;
                   currLong = mapCenter.longitude;
+
+                  if (firstTimeStart) {
+                    firstTimeStart = false;
+                    return map(
+                      currLat,
+                      currLong,
+                      _animatedMapController.mapController,
+                      _updateMapCenter,
+                      context,
+                      4.5,
+                    );
+                  }
 
                   return map(
                     currLat,

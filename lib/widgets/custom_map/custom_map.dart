@@ -5,7 +5,6 @@ import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:gadc/caching/get_cache_directory.dart';
 import 'package:gadc/functions/bottom_modal.dart';
 import 'package:gadc/functions/nav_status.dart';
-import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:latlong2/latlong.dart';
 
 Widget map(double myLat, double myLong, MapController mapController,
@@ -18,8 +17,8 @@ Widget map(double myLat, double myLong, MapController mapController,
         options: MapOptions(
           cameraConstraint: CameraConstraint.contain(
             bounds: LatLngBounds(
-              LatLng(-90, -180), // Southwest corner of the bounds
-              LatLng(90, 180), // Northeast corner of the bounds
+              const LatLng(-90, -180), // Southwest corner of the bounds
+              const LatLng(90, 180), // Northeast corner of the bounds
             ),
           ),
           keepAlive:
@@ -54,7 +53,6 @@ Widget map(double myLat, double myLong, MapController mapController,
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-            // errorImage: AssetImage(assetName), // set an image to load when map not load due to no network connection
             tileProvider: CachedTileProvider(
               // maxStale keeps the tile cached for the given Duration and
               // tries to revalidate the next time it gets requested
@@ -67,6 +65,7 @@ Widget map(double myLat, double myLong, MapController mapController,
           ),
           MarkerLayer(
             markers: [
+              // EED NITS
               Marker(
                 point: const LatLng(24.7577, 92.7923),
                 width: 20,
