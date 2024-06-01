@@ -193,7 +193,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               child: const Padding(
                                 padding: EdgeInsets.all(4),
                                 child: Icon(
-                                  Icons.arrow_drop_down,
+                                  Icons.arrow_drop_up,
                                   size: 24,
                                 ),
                               ),
