@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/create_page/create_page.dart';
 import 'package:gadc/pages/space_page/space_page.dart';
-import 'package:gadc/pages/testing_page/testing_page.dart';
-import 'package:gadc/widgets/custom_app_bar/custom_app_bar.dart';
+import 'package:gadc/pages/surrounding_page/surrounding_page.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
@@ -26,34 +25,13 @@ class _NavigationPage extends State<NavigationPage> {
   Widget getPage() {
     switch (currentBottomIndex) {
       case 0:
-        return TestingPage();
+        return const SurroundingPage();
       case 1:
         return SpacePage();
       case 2:
         return CreatePage();
       default:
-        return TestingPage();
-    }
-  }
-
-  PreferredSizeWidget getAppBar() {
-    switch (currentBottomIndex) {
-      case 0:
-        return const CustomAppBar(
-          subtitle: "Explore",
-        );
-      case 1:
-        return const CustomAppBar(
-          subtitle: "3D",
-        );
-      case 2:
-        return const CustomAppBar(
-          subtitle: "Create",
-        );
-      default:
-        return const CustomAppBar(
-          subtitle: "Explore",
-        );
+        return const SurroundingPage();
     }
   }
 

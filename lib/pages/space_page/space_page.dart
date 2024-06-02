@@ -4,11 +4,9 @@ import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 class SpacePage extends StatelessWidget {
   SpacePage({super.key});
 
-  static final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
   UnityWidgetController? _unityWidgetController;
 
-  // Callback that connects the created controller to the unity controller
+  // Callback that connects the created controller to the unity controller, (Need to Work on this)
   void onUnityCreated(controller) {
     _unityWidgetController = controller;
   }
@@ -22,9 +20,9 @@ class SpacePage extends StatelessWidget {
       children: [
         Flexible(
           child: Align(
-            alignment: AlignmentDirectional(0, -1),
+            alignment: const AlignmentDirectional(0, -1),
             child: Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
@@ -41,7 +39,7 @@ class SpacePage extends StatelessWidget {
                       ),
                     ),
                     Align(
-                      alignment: AlignmentDirectional(1, 0),
+                      alignment: const AlignmentDirectional(1, 0),
                       child: Card(
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         color: Theme.of(context).secondaryHeaderColor,
@@ -50,17 +48,17 @@ class SpacePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
+                              const Text(
                                 'Floor',
                                 style: TextStyle(
                                   fontFamily: 'Readex Pro',
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 26,
                                 child: Divider(
                                   thickness: 1,
@@ -89,35 +87,23 @@ class SpacePage extends StatelessWidget {
                                     fontSize: floor == '5' ? 36 : null,
                                   ),
                                 ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 26,
                                 child: Divider(
                                   thickness: 1,
-                                  // color: Theme.of(context)
-                                  //     .textTheme
-                                  //     .bodyText1!
-                                  //     .color,
                                 ),
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.all(2),
                                 child: Icon(
                                   Icons.arrow_drop_up,
-                                  // color: Theme.of(context)
-                                  //     .textTheme
-                                  //     .bodyText2!
-                                  //     .color,
                                   size: 24,
                                 ),
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.all(2),
                                 child: Icon(
                                   Icons.arrow_drop_down,
-                                  // color: Theme.of(context)
-                                  //     .textTheme
-                                  //     .bodyText2!
-                                  //     .color,
                                   size: 24,
                                 ),
                               ),
@@ -132,87 +118,7 @@ class SpacePage extends StatelessWidget {
             ),
           ),
         ),
-        // Row(
-        //   mainAxisSize: MainAxisSize.max,
-        //   children: [
-        //     Expanded(
-        //       child: Padding(
-        //         padding: EdgeInsets.all(8),
-        //         child: TextFormField(
-        //           // controller: _textController,
-        //           // focusNode: _textFieldFocusNode,
-        //           autofocus: false,
-        //           obscureText: false,
-        //           decoration: InputDecoration(
-        //             isDense: true,
-        //             labelText: 'Ask Gemini',
-        //             labelStyle: TextStyle(
-        //               fontFamily: 'Readex Pro',
-        //               color: Theme.of(context).secondaryHeaderColor,
-        //             ),
-        //             hintStyle: TextStyle(
-        //               fontFamily: 'Readex Pro',
-        //             ),
-        //             enabledBorder: UnderlineInputBorder(
-        //               borderSide: BorderSide(
-        //                 color: Theme.of(context).colorScheme.secondary,
-        //                 width: 2,
-        //               ),
-        //               borderRadius: BorderRadius.circular(24),
-        //             ),
-        //             focusedBorder: UnderlineInputBorder(
-        //               borderSide: BorderSide(
-        //                 color: Theme.of(context).primaryColor,
-        //                 width: 2,
-        //               ),
-        //               borderRadius: BorderRadius.circular(24),
-        //             ),
-        //             errorBorder: UnderlineInputBorder(
-        //               borderSide: BorderSide(
-        //                 // color: Theme.of(context).errorColor,
-        //                 width: 2,
-        //               ),
-        //               borderRadius: BorderRadius.circular(24),
-        //             ),
-        //             focusedErrorBorder: UnderlineInputBorder(
-        //               borderSide: BorderSide(
-        //                 // color: Theme.of(context).errorColor,
-        //                 width: 2,
-        //               ),
-        //               borderRadius: BorderRadius.circular(24),
-        //             ),
-        //             filled: true,
-        //             // fillColor: Theme.of(context).textTheme.bodyText1!.color,
-        //             prefixIcon: Icon(
-        //               Icons.notes,
-        //               color: Theme.of(context).secondaryHeaderColor,
-        //             ),
-        //             suffixIcon: Icon(
-        //               Icons.keyboard_voice,
-        //               color: Theme.of(context).secondaryHeaderColor,
-        //             ),
-        //           ),
-        //           style: TextStyle(
-        //             fontFamily: 'Readex Pro',
-        //           ),
-        //           validator: (value) {
-        //             // Your validator logic here
-        //           },
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
       ],
     );
-
-    //  Center(
-    //   child: Container(
-    //     color: Colors.transparent,
-    //     child: UnityWidget(
-    //       onUnityCreated: onUnityCreated,
-    //     ),
-    //   ),
-    // );
   }
 }
