@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
-import 'package:gadc/functions/shared_pref/location.dart';
+import 'package:gadc/functions/shared_pref/past_location.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -69,7 +69,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
           position
               .longitude); // write the latitute and longitude to map center notifier
 
-      writeMyLastLocation(
+      PastLocation().writeMyLastLocation(
           position.latitude, position.longitude); // update last location
     });
   }
@@ -92,7 +92,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
     return Stack(
       children: [
         FutureBuilder(
-            future: readMyLastLocation(),
+            future: PastLocation().readMyLastLocation(),
             builder: (context, snapshot) {
               // if past location data exists set that location initially
               if (snapshot.data != null) {

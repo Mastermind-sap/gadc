@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
-import 'package:gadc/functions/nav_status.dart';
 
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 
 class ExplorePage extends StatefulWidget {
-  final VoidCallback drawer_key;
-  const ExplorePage({super.key, required this.drawer_key});
+  final VoidCallback drawerKey;
+  const ExplorePage({super.key, required this.drawerKey});
 
   @override
   _ExplorePageState createState() => _ExplorePageState();
@@ -18,10 +17,12 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode
+        .edgeToEdge); // this is working for a short duration, need to find a way to fix this
   }
 
-  void navigateToTestingPage(BuildContext context) {
+  // To navigate to Navigation Page
+  void navigateToNavigationPage(BuildContext context) {
     Navigator.of(context).push(
       fromBottomRoute(const NavigationPage()),
     );
@@ -53,7 +54,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                widget.drawer_key();
+                                widget.drawerKey();
                               },
                               child: Card(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -178,7 +179,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                           child: GestureDetector(
                             onTap: () {
-                              navigateToTestingPage(context);
+                              navigateToNavigationPage(context);
                             },
                             child: Card(
                               color: (Theme.of(context).brightness ==

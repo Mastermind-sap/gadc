@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:gadc/caching/get_cache_directory.dart';
-import 'package:gadc/functions/bottom_modal.dart';
-import 'package:gadc/functions/nav_status.dart';
+import 'package:gadc/functions/bottom_modal/bottom_modal_on_map.dart';
 import 'package:latlong2/latlong.dart';
 
 Widget map(double myLat, double myLong, MapController mapController,
@@ -44,11 +43,7 @@ Widget map(double myLat, double myLong, MapController mapController,
             updateMapCenter();
           },
           onLongPress: (tapPosition, point) {
-            readNavStatus().then((navStatus) {
-              if (navStatus == true || navStatus == null) {
-                showOptionsBottomSheet(context);
-              }
-            });
+            bottomModalOnMap(context);
           },
         ),
         children: [
