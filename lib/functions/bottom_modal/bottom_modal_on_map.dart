@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void showOptionsBottomSheet(BuildContext context) {
+void bottomModalOnMap(BuildContext context) {
   showBottomSheet(
     context: context,
     builder: (BuildContext context) {

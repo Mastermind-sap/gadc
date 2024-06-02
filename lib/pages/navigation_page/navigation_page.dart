@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/create_page/create_page.dart';
-import 'package:gadc/pages/explore_page/explore_page.dart';
 import 'package:gadc/pages/space_page/space_page.dart';
 import 'package:gadc/pages/testing_page/testing_page.dart';
 import 'package:gadc/widgets/custom_app_bar/custom_app_bar.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
-// for testing purposes
 class NavigationPage extends StatefulWidget {
   const NavigationPage({
     super.key,
