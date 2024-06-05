@@ -18,21 +18,18 @@ class MainActivity: FlutterActivity() {
     private lateinit var llmInference: LlmInference
 
     private val modelExists: Boolean
-        get() = File("/data/local/tmp/llm/model.bin").exists()
+        get() = File("/storage/emulated/0/Android/data/com.example.gadc/files/data/user/0/com.example.gadc/files/model.bin").exists()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!modelExists) {
-            throw IllegalArgumentException("Model not found at path: ${"/data/local/tmp/llm/model.bin"}")
-        }
-
-        val options = LlmInference.LlmInferenceOptions.builder()
-            .setModelPath("/data/local/tmp/llm/model.bin")
-            .setMaxTokens(1024)
+        if (modelExists) {val options = LlmInference.LlmInferenceOptions.builder()
+            .setModelPath("/storage/emulated/0/Android/data/com.example.gadc/files/data/user/0/com.example.gadc/files/model.bin")
+            .setTemperature(1F)
             .build()
 
-        llmInference = LlmInference.createFromOptions(applicationContext, options)
+            llmInference = LlmInference.createFromOptions(applicationContext, options)}
+
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -43,7 +40,7 @@ class MainActivity: FlutterActivity() {
         ).setMethodCallHandler { call, result ->
             if (call.method == "getResultFromGemma") {
                 val prompt: String? = call.argument("prompt")
-                result.success(llmInference.generateResponse(prompt))
+                result.success(llmInference.generateResponse("$prompt in 10-15 words"))
             } else {
                 result.notImplemented()
             }

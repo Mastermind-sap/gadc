@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gadc/functions/gemma/download_gemma.dart';
+import 'package:gadc/functions/gemma/gemma_exits.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:lottie/lottie.dart';
 
@@ -36,12 +38,25 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
   }
 
   var channel = const MethodChannel("gadc/gemma-integration");
-  final ValueNotifier<String> result = ValueNotifier<String>("");
+  var result = "";
+  List<String> resultList = [];
+
+  Widget showResultList() {
+    return Column(
+      children: List.generate(resultList.length,
+          (index) => Text(resultList[resultList.length - 1 - index])),
+    );
+  }
+
   void fetchDataFromNative(String prompt) async {
     try {
-      result.value =
+      final String response =
           await channel.invokeMethod('getResultFromGemma', {"prompt": prompt});
-      setState(() {});
+
+      setState(() {
+        result = response;
+        resultList.add(response);
+      });
     } on PlatformException catch (e) {
       showToast('Error: ${e.message}');
     }
@@ -94,7 +109,7 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                                     alignment: AlignmentDirectional(1, 1),
                                     child: Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
-                                          16, 0, 8, 0),
+                                          16, 36, 8, 0),
                                       child: Text(
                                         'A\nU\nR\nA',
                                         style: TextStyle(
@@ -168,13 +183,8 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                         (_isKeyboardVisible)
                             ? Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: (result.value.isNotEmpty)
-                                    ? ValueListenableBuilder<String>(
-                                        valueListenable: result,
-                                        builder: (context, value, child) {
-                                          return Text(value);
-                                        },
-                                      )
+                                child: (result.isNotEmpty)
+                                    ? showResultList()
                                     : Align(
                                         alignment: Alignment.topCenter,
                                         child: Lottie.asset(
@@ -325,13 +335,16 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      prefixIcon: const Icon(
-                        Icons.notes,
-                        color: Colors.black,
+                      prefixIcon: GestureDetector(
+                        onTap: () {},
+                        child: const Icon(
+                          Icons.notes,
+                          color: Colors.black,
+                        ),
                       ),
                       suffixIcon: GestureDetector(
                         onTap: () {
-                          result.value = "";
+                          result = "";
                           setState(() {});
                           prompt = promptController.text;
                           if (prompt.isNotEmpty) {
@@ -339,10 +352,22 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                             promptController.clear();
                           }
                         },
-                        child: const Icon(
-                          Icons.send,
-                          color: Colors.black,
-                        ),
+                        child: (gemmaExists)
+                            ? const Icon(
+                                Icons.send,
+                                color: Colors.black,
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  downloadGemma();
+                                  showToast(
+                                      "Restart The Application after Download gets Completed");
+                                },
+                                child: const Icon(
+                                  Icons.download,
+                                  color: Colors.black,
+                                ),
+                              ),
                       ),
                     ),
                   ),
