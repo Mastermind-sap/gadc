@@ -69,4 +69,5 @@ flutter {
 
 dependencies {
     implementation project(':unityLibrary')
+    implementation ('com.google.mediapipe:tasks-genai:0.10.14')
 }
