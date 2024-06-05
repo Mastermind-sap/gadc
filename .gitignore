@@ -32,6 +32,7 @@ migrate_working_dir/
 /build/
 /unity/
 /android/unityLibrary/
+/gemma/
 
 # Symbolication related
 app.*.symbols
