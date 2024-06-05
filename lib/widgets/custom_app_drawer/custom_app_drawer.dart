@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:lottie/lottie.dart';
 
 class CustomAppDrawer extends StatefulWidget {
@@ -32,6 +34,21 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
       _isKeyboardVisible = bottomInset > 0.0;
     });
   }
+
+  var channel = const MethodChannel("gadc/gemma-integration");
+  final ValueNotifier<String> result = ValueNotifier<String>("");
+  void fetchDataFromNative(String prompt) async {
+    try {
+      result.value =
+          await channel.invokeMethod('getResultFromGemma', {"prompt": prompt});
+      setState(() {});
+    } on PlatformException catch (e) {
+      showToast('Error: ${e.message}');
+    }
+  }
+
+  final TextEditingController promptController = TextEditingController();
+  String prompt = "";
 
   @override
   Widget build(BuildContext context) {
@@ -149,14 +166,24 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                           height: 16 * 2,
                         ),
                         (_isKeyboardVisible)
-                            ? Align(
-                                alignment: Alignment.topCenter,
-                                child: Lottie.asset(
-                                  "assets/ai_lottie.json",
-                                  frameRate: const FrameRate(120),
-                                  repeat: true,
-                                  height: 150,
-                                ),
+                            ? Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: (result.value.isNotEmpty)
+                                    ? ValueListenableBuilder<String>(
+                                        valueListenable: result,
+                                        builder: (context, value, child) {
+                                          return Text(value);
+                                        },
+                                      )
+                                    : Align(
+                                        alignment: Alignment.topCenter,
+                                        child: Lottie.asset(
+                                          "assets/ai_lottie.json",
+                                          frameRate: const FrameRate(120),
+                                          repeat: true,
+                                          height: 150,
+                                        ),
+                                      ),
                               )
                             : Padding(
                                 padding: const EdgeInsetsDirectional.fromSTEB(
@@ -275,6 +302,7 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                     height: 8,
                   ),
                   TextFormField(
+                    controller: promptController,
                     autofocus: false,
                     obscureText: false,
                     style: const TextStyle(color: Colors.black),
@@ -301,9 +329,20 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                         Icons.notes,
                         color: Colors.black,
                       ),
-                      suffixIcon: const Icon(
-                        Icons.keyboard_voice,
-                        color: Colors.black,
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          result.value = "";
+                          setState(() {});
+                          prompt = promptController.text;
+                          if (prompt.isNotEmpty) {
+                            fetchDataFromNative(prompt);
+                            promptController.clear();
+                          }
+                        },
+                        child: const Icon(
+                          Icons.send,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
