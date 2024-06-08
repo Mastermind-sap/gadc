@@ -18,7 +18,7 @@ class MapPage extends StatefulWidget {
 class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   double currLat = 21, currLong = 78; // default location coordinates of India
   bool firstTimeStart =
-      false; // to set zoom and animation for 1st time initialization of the map
+      true; // to set zoom and animation for 1st time initialization of the map
   late final _animatedMapController = AnimatedMapController(vsync: this);
   ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(const LatLng(21, 78));
@@ -93,6 +93,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         FutureBuilder(
           future: PastLocation().readMyLastLocation(),
           builder: (context, snapshot) {
+            bool appFirstTimeLaunch = false;
             if (snapshot.data != null) {
               _mapCenterNotifier = ValueNotifier<LatLng>(
                 LatLng(
@@ -100,20 +101,20 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   double.parse(snapshot.data![1]),
                 ),
               );
-              animateMapView(double.parse(snapshot.data![0]),
-                  double.parse(snapshot.data![1]));
+              if (firstTimeStart) {
+                animateMapView(double.parse(snapshot.data![0]),
+                    double.parse(snapshot.data![1]));
+                firstTimeStart = false;
+              }
             } else {
-              firstTimeStart = true;
+              appFirstTimeLaunch = true;
             }
-
             return ValueListenableBuilder<LatLng>(
               valueListenable: _mapCenterNotifier,
               builder: (context, mapCenter, child) {
                 currLat = mapCenter.latitude;
                 currLong = mapCenter.longitude;
-
-                if (firstTimeStart) {
-                  firstTimeStart = false;
+                if (appFirstTimeLaunch) {
                   return map(
                     currLat,
                     currLong,
@@ -123,7 +124,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                     4.5,
                   );
                 }
-
                 return map(
                   currLat,
                   currLong,
