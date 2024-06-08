@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/location/geocoding.dart';
@@ -25,23 +26,25 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   void initState() {
     super.initState();
+    focusAuraSearch.addListener(onFocusChange);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
 
-  // To navigate to Navigation Page
-  void navigateToNavigationPage(BuildContext context) {
-    Navigator.of(context).push(
-      fromBottomRoute(const NavigationPage()),
-    );
+  FocusNode focusAuraSearch = FocusNode();
+  bool isOnAuraSearch = false;
+
+  void onFocusChange() {
+    setState(() {
+      isOnAuraSearch = focusAuraSearch.hasFocus;
+    });
   }
 
-  // To perform the search and update the MapPage
-  void _performSearch(BuildContext context) async {
-    final searchQuery = _searchController.text;
-    if (searchQuery.isNotEmpty) {
-      _searchResults =
-          await _geocodingService.getCoordinatesFromAddress(searchQuery);
-      print(_searchResults);
+  void _performSearchOnChange(String searchQueryInitials) async {
+    if (searchQueryInitials.isNotEmpty) {
+      _searchResults = await _geocodingService
+          .getCoordinatesFromAddress(searchQueryInitials);
+      setState(() {});
+    } else {
       setState(() {});
     }
   }
@@ -95,6 +98,10 @@ class _ExplorePageState extends State<ExplorePage> {
                             Expanded(
                               child: TextFormField(
                                 controller: _searchController,
+                                focusNode: focusAuraSearch,
+                                onChanged: (value) {
+                                  _performSearchOnChange(value);
+                                },
                                 autofocus: false,
                                 obscureText: false,
                                 style: const TextStyle(
@@ -136,27 +143,26 @@ class _ExplorePageState extends State<ExplorePage> {
                                           Brightness.dark)
                                       ? const Color.fromARGB(255, 29, 36, 40)
                                       : Colors.white,
-                                  prefixIcon: GestureDetector(
-                                    onTap: () {
-                                      _performSearch(context);
-                                    },
-                                    child: const Icon(
-                                      Icons.search,
-                                    ),
+                                  prefixIcon: const Icon(
+                                    Icons.search,
                                   ),
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      _searchController.clear();
-                                    },
-                                    child: const Icon(
-                                      Icons.keyboard_voice,
-                                      size: 24,
-                                    ),
-                                  ),
+                                  suffixIcon: (isOnAuraSearch)
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            _searchResults = [];
+                                            _searchController.clear();
+                                            FocusScope.of(context).unfocus();
+                                          },
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 24,
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.keyboard_voice,
+                                          size: 24,
+                                        ),
                                 ),
-                                onFieldSubmitted: (value) {
-                                  _performSearch(context);
-                                },
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -194,42 +200,49 @@ class _ExplorePageState extends State<ExplorePage> {
                           top: 100,
                           left: 16,
                           right: 16,
-                          height: min(_searchResults.length * 90, 200),
+                          height: min(_searchResults.length * 90, 250),
                           child: Card(
-                            color: Colors.black,
-                            child: ListView.builder(
-                              itemCount: _searchResults.length,
-                              itemBuilder: (context, index) {
-                                final location = _searchResults[index];
-                                return ListTile(
-                                  hoverColor: Colors.blue,
-                                  title: Text(location['displayName']),
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (location['address']["country"] !=
-                                          null)
-                                      Text("Country: " +
-                                          location['address']["country"]),
-                                      if (location['address']["postcode"] !=
-                                          null)
-                                        Text("Postcode: " +
-                                            location['address']["postcode"]),
-                                    ],
-                                  ),
-                                  onTap: () {
-                                    // print(_searchResults);
-                                    _mapPageKey.currentState?.animateMapView(
-                                      location['latLng'].latitude,
-                                      location['latLng'].longitude,
-                                    );
-                                    _searchController.clear();
-                                    setState(() {
-                                      _searchResults.clear();
-                                    });
-                                  },
-                                );
-                              },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: ListView.builder(
+                                padding: EdgeInsets
+                                    .zero, // Remove default padding of ListView
+                                itemCount: _searchResults.length,
+                                itemBuilder: (context, index) {
+                                  final location = _searchResults[index];
+                                  return ListTile(
+                                    contentPadding: EdgeInsets
+                                        .zero, // Remove default padding of ListTile
+                                    // hoverColor: Colors.blue,
+                                    title: Text(location['displayName']),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (location['address']["country"] !=
+                                            null)
+                                          Text("Country: " +
+                                              location['address']["country"]),
+                                        if (location['address']["postcode"] !=
+                                            null)
+                                          Text("Postcode: " +
+                                              location['address']["postcode"]),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      // print(_searchResults);
+                                      _mapPageKey.currentState?.animateMapView(
+                                        location['latLng'].latitude,
+                                        location['latLng'].longitude,
+                                      );
+                                      _searchController.clear();
+                                      setState(() {
+                                        _searchResults.clear();
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -239,7 +252,9 @@ class _ExplorePageState extends State<ExplorePage> {
                           padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                           child: GestureDetector(
                             onTap: () {
-                              navigateToNavigationPage(context);
+                              Navigator.of(context).push(
+                                fromBottomRoute(const NavigationPage()),
+                              );
                             },
                             child: Card(
                               color: (Theme.of(context).brightness ==

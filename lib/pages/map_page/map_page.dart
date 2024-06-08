@@ -22,7 +22,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   late final _animatedMapController = AnimatedMapController(vsync: this);
   ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(const LatLng(21, 78));
-  Timer? _timer;
 
   @override
   void initState() {
@@ -33,7 +32,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _animatedMapController.dispose();
-    _timer?.cancel();
     super.dispose();
   }
 
