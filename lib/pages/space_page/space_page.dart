@@ -62,11 +62,6 @@ class SpacePage extends StatelessWidget {
                                 width: 26,
                                 child: Divider(
                                   thickness: 1,
-                                  //   color: Theme.of(context)
-                                  //       .textTheme
-                                  //       .bodyText1!
-                                  //       .color,
-                                  // ),
                                 ),
                               ),
                               for (var floor in [
