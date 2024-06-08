@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:gadc/functions/location/geocoding.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,12 +11,12 @@ class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
   @override
-  State<MapPage> createState() => _MapPage();
+  State<MapPage> createState() => MapPageState();
 
   static const String routeName = "/mappage";
 }
 
-class _MapPage extends State<MapPage> with TickerProviderStateMixin {
+class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   double currLat = 21, currLong = 78; // default location coordinates of India
   bool firstTimeStart =
       false; // to set zoom and animation for 1st time initialization of the map
@@ -23,6 +24,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
   ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(const LatLng(21, 78));
   Timer? _timer;
+  final GeocodingService _geocodingService = GeocodingService();
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
+
     Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -65,9 +68,9 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
       ),
     ).listen((Position position) {
       _mapCenterNotifier.value = LatLng(
-          position.latitude,
-          position
-              .longitude); // write the latitute and longitude to map center notifier
+        position.latitude,
+        position.longitude,
+      );
 
       PastLocation().writeMyLastLocation(
           position.latitude, position.longitude); // update last location
@@ -87,56 +90,65 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
     );
   }
 
+  Future<void> searchLocation(String address) async {
+    final List<LatLng> coordinates =
+        await _geocodingService.getCoordinatesFromAddress(address);
+    if (coordinates.isNotEmpty) {
+      final LatLng location = coordinates.first;
+      animateMapView(location.latitude, location.longitude);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         FutureBuilder(
-            future: PastLocation().readMyLastLocation(),
-            builder: (context, snapshot) {
-              // if past location data exists set that location initially
-              if (snapshot.data != null) {
-                _mapCenterNotifier = ValueNotifier<LatLng>(
-                  LatLng(
-                    double.parse(snapshot.data![0]),
-                    double.parse(snapshot.data![1]),
-                  ),
-                );
-                animateMapView(double.parse(snapshot.data![0]),
-                    double.parse(snapshot.data![1]));
-              } else {
-                firstTimeStart = true;
-              }
+          future: PastLocation().readMyLastLocation(),
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              _mapCenterNotifier = ValueNotifier<LatLng>(
+                LatLng(
+                  double.parse(snapshot.data![0]),
+                  double.parse(snapshot.data![1]),
+                ),
+              );
+              animateMapView(double.parse(snapshot.data![0]),
+                  double.parse(snapshot.data![1]));
+            } else {
+              firstTimeStart = true;
+            }
 
-              return ValueListenableBuilder<LatLng>(
-                valueListenable: _mapCenterNotifier,
-                builder: (context, mapCenter, child) {
-                  currLat = mapCenter.latitude;
-                  currLong = mapCenter.longitude;
+            return ValueListenableBuilder<LatLng>(
+              valueListenable: _mapCenterNotifier,
+              builder: (context, mapCenter, child) {
+                currLat = mapCenter.latitude;
+                currLong = mapCenter.longitude;
 
-                  if (firstTimeStart) {
-                    firstTimeStart = false;
-                    return map(
-                      currLat,
-                      currLong,
-                      _animatedMapController.mapController,
-                      _updateMapCenter,
-                      context,
-                      4.5,
-                    );
-                  }
-
+                if (firstTimeStart) {
+                  firstTimeStart = false;
                   return map(
                     currLat,
                     currLong,
                     _animatedMapController.mapController,
                     _updateMapCenter,
                     context,
-                    17.5,
+                    4.5,
                   );
-                },
-              );
-            }),
+                }
+
+                return map(
+                  currLat,
+                  currLong,
+                  _animatedMapController.mapController,
+                  _updateMapCenter,
+                  context,
+                  17.5,
+                );
+              },
+            );
+          },
+        ),
         Align(
           alignment: const AlignmentDirectional(1, 1),
           child: Padding(
@@ -201,7 +213,7 @@ class _MapPage extends State<MapPage> with TickerProviderStateMixin {
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
-
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 
@@ -10,15 +9,17 @@ class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key, required this.drawerKey});
 
   @override
-  _ExplorePageState createState() => _ExplorePageState();
+  State createState() => _ExplorePageState();
 }
 
 class _ExplorePageState extends State<ExplorePage> {
+  final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<MapPageState> _mapPageKey = GlobalKey<MapPageState>();
+
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode
-        .edgeToEdge); // this is working for a short duration, need to find a way to fix this
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
 
   // To navigate to Navigation Page
@@ -26,6 +27,14 @@ class _ExplorePageState extends State<ExplorePage> {
     Navigator.of(context).push(
       fromBottomRoute(const NavigationPage()),
     );
+  }
+
+  // To perform the search and update the MapPage
+  void _performSearch(BuildContext context) {
+    final searchQuery = _searchController.text;
+    if (searchQuery.isNotEmpty) {
+      _mapPageKey.currentState?.searchLocation(searchQuery);
+    }
   }
 
   @override
@@ -47,7 +56,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   height: MediaQuery.of(context).size.height,
                   child: Stack(
                     children: [
-                      const MapPage(),
+                      MapPage(key: _mapPageKey),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 48, 8, 0),
                         child: Row(
@@ -58,8 +67,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               },
                               child: Card(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: (Theme.of(context).brightness ==
-                                        Brightness.dark)
+                                color: (Theme.of(context).brightness == Brightness.dark)
                                     ? const Color.fromARGB(255, 29, 36, 40)
                                     : Colors.white,
                                 shape: RoundedRectangleBorder(
@@ -73,11 +81,10 @@ class _ExplorePageState extends State<ExplorePage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 4,
-                            ),
+                            const SizedBox(width: 4),
                             Expanded(
                               child: TextFormField(
+                                controller: _searchController,
                                 autofocus: false,
                                 obscureText: false,
                                 style: const TextStyle(
@@ -120,34 +127,32 @@ class _ExplorePageState extends State<ExplorePage> {
                                       ? const Color.fromARGB(255, 29, 36, 40)
                                       : Colors.white,
                                   prefixIcon: GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      _performSearch(context);
+                                    },
                                     child: const Icon(
                                       Icons.search,
                                     ),
                                   ),
                                   suffixIcon: GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      _searchController.clear();
+                                    },
                                     child: const Icon(
                                       Icons.keyboard_voice,
                                       size: 24,
                                     ),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter some text';
-                                  }
-                                  return null;
+                                onFieldSubmitted: (value) {
+                                  _performSearch(context);
                                 },
                               ),
                             ),
-                            const SizedBox(
-                              width: 4,
-                            ),
+                            const SizedBox(width: 4),
                             Card(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.dark)
+                              color: (Theme.of(context).brightness == Brightness.dark)
                                   ? const Color.fromARGB(255, 29, 36, 40)
                                   : Colors.white,
                               elevation: 4,
@@ -182,8 +187,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               navigateToNavigationPage(context);
                             },
                             child: Card(
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.dark)
+                              color: (Theme.of(context).brightness == Brightness.dark)
                                   ? const Color.fromARGB(255, 29, 36, 40)
                                   : Colors.white,
                               clipBehavior: Clip.antiAliasWithSaveLayer,
