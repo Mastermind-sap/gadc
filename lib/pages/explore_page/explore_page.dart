@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/location/geocoding.dart';
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 
@@ -15,6 +18,9 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<MapPageState> _mapPageKey = GlobalKey<MapPageState>();
+  List<Map<String, dynamic>> _searchResults = [];
+
+  final GeocodingService _geocodingService = GeocodingService();
 
   @override
   void initState() {
@@ -30,10 +36,13 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   // To perform the search and update the MapPage
-  void _performSearch(BuildContext context) {
+  void _performSearch(BuildContext context) async {
     final searchQuery = _searchController.text;
     if (searchQuery.isNotEmpty) {
-      _mapPageKey.currentState?.searchLocation(searchQuery);
+      _searchResults =
+          await _geocodingService.getCoordinatesFromAddress(searchQuery);
+      print(_searchResults);
+      setState(() {});
     }
   }
 
@@ -67,7 +76,8 @@ class _ExplorePageState extends State<ExplorePage> {
                               },
                               child: Card(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: (Theme.of(context).brightness == Brightness.dark)
+                                color: (Theme.of(context).brightness ==
+                                        Brightness.dark)
                                     ? const Color.fromARGB(255, 29, 36, 40)
                                     : Colors.white,
                                 shape: RoundedRectangleBorder(
@@ -152,7 +162,8 @@ class _ExplorePageState extends State<ExplorePage> {
                             const SizedBox(width: 4),
                             Card(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: (Theme.of(context).brightness == Brightness.dark)
+                              color: (Theme.of(context).brightness ==
+                                      Brightness.dark)
                                   ? const Color.fromARGB(255, 29, 36, 40)
                                   : Colors.white,
                               elevation: 4,
@@ -178,6 +189,50 @@ class _ExplorePageState extends State<ExplorePage> {
                           ],
                         ),
                       ),
+                      if (_searchResults.isNotEmpty)
+                        Positioned(
+                          top: 100,
+                          left: 16,
+                          right: 16,
+                          height: min(_searchResults.length * 90, 200),
+                          child: Card(
+                            color: Colors.black,
+                            child: ListView.builder(
+                              itemCount: _searchResults.length,
+                              itemBuilder: (context, index) {
+                                final location = _searchResults[index];
+                                return ListTile(
+                                  hoverColor: Colors.blue,
+                                  title: Text(location['displayName']),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (location['address']["country"] !=
+                                          null)
+                                      Text("Country: " +
+                                          location['address']["country"]),
+                                      if (location['address']["postcode"] !=
+                                          null)
+                                        Text("Postcode: " +
+                                            location['address']["postcode"]),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    // print(_searchResults);
+                                    _mapPageKey.currentState?.animateMapView(
+                                      location['latLng'].latitude,
+                                      location['latLng'].longitude,
+                                    );
+                                    _searchController.clear();
+                                    setState(() {
+                                      _searchResults.clear();
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       Align(
                         alignment: const AlignmentDirectional(-1, 1),
                         child: Padding(
@@ -187,7 +242,8 @@ class _ExplorePageState extends State<ExplorePage> {
                               navigateToNavigationPage(context);
                             },
                             child: Card(
-                              color: (Theme.of(context).brightness == Brightness.dark)
+                              color: (Theme.of(context).brightness ==
+                                      Brightness.dark)
                                   ? const Color.fromARGB(255, 29, 36, 40)
                                   : Colors.white,
                               clipBehavior: Clip.antiAliasWithSaveLayer,

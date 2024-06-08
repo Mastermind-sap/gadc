@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
-import 'package:gadc/functions/location/geocoding.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,7 +23,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(const LatLng(21, 78));
   Timer? _timer;
-  final GeocodingService _geocodingService = GeocodingService();
 
   @override
   void initState() {
@@ -88,15 +86,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       zoom: 17.5,
       rotation: 0,
     );
-  }
-
-  Future<void> searchLocation(String address) async {
-    final List<LatLng> coordinates =
-        await _geocodingService.getCoordinatesFromAddress(address);
-    if (coordinates.isNotEmpty) {
-      final LatLng location = coordinates.first;
-      animateMapView(location.latitude, location.longitude);
-    }
   }
 
   @override
