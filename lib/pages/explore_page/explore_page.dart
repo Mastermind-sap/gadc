@@ -263,7 +263,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Padding(
-                                padding: EdgeInsets.all(4),
+                                padding: EdgeInsets.all(6),
                                 child: Icon(
                                   Icons.arrow_drop_up,
                                   size: 24,

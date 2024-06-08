@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/create_page/create_page.dart';
 import 'package:gadc/pages/space_page/space_page.dart';
-import 'package:gadc/pages/surrounding_page/surrounding_page.dart';
+import 'package:gadc/pages/nearby_page/nearby_page.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
@@ -39,7 +39,7 @@ class _NavigationPage extends State<NavigationPage> {
     switch (currentBottomIndex) {
       case 0:
         return const CustomAppDrawer(
-          pageName: 'EXPLORE',
+          pageName: 'Nearby',
         );
       case 1:
         return const CustomAppDrawer(

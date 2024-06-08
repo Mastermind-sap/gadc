@@ -27,7 +27,7 @@ class CustomBottomNavbar extends StatelessWidget {
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.search),
-              label: "Explore",
+              label: "Nearby",
             ),
             NavigationDestination(
               icon: Icon(Icons.my_location),
