@@ -78,10 +78,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     return _animatedMapController.mapController.camera.center;
   }
 
-  void animateMapView(double lat, double long) {
+  void animateMapView(double lat, double long, double zoom) {
     _animatedMapController.animateTo(
       dest: LatLng(lat, long),
-      zoom: 17.5,
+      zoom: zoom,
       rotation: 0,
     );
   }
@@ -103,7 +103,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               );
               if (firstTimeStart) {
                 animateMapView(double.parse(snapshot.data![0]),
-                    double.parse(snapshot.data![1]));
+                    double.parse(snapshot.data![1]), 17.5);
                 firstTimeStart = false;
               }
             } else {
