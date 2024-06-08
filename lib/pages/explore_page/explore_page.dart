@@ -229,6 +229,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                       _mapPageKey.currentState?.animateMapView(
                                         location['latLng'].latitude,
                                         location['latLng'].longitude,
+                                        10,
                                       );
                                       _searchController.clear();
                                       setState(() {
