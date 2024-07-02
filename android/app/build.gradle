@@ -47,7 +47,7 @@ android {
         applicationId "com.example.gadc"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 28
+        minSdkVersion 31
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -70,4 +70,5 @@ flutter {
 dependencies {
     implementation project(':unityLibrary')
     implementation ('com.google.mediapipe:tasks-genai:0.10.14')
+    implementation("androidx.core:core-splashscreen:1.0.0")
 }
