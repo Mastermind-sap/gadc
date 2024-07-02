@@ -28,7 +28,8 @@ class _GADCState extends State<GADC> {
         SplashScreen.routeName: (context) => const SplashScreen(),
         Homepage.routeName: (context) => const Homepage(),
       },
-      initialRoute: SplashScreen.routeName,
+      // not completely removing the spash screen as later we can go beyound android
+      initialRoute: Homepage.routeName,
     );
   }
 }
