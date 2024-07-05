@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "278924520494",
+    "project_id": "aura-77d2f",
+    "storage_bucket": "aura-77d2f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278924520494:android:48d6a76d79d0b9bd0ec3bf",
+        "android_client_info": {
+          "package_name": "com.example.gadc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278924520494-pgebv45q48c1p719k31b1r5jnpatfnfu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC14rGcZS3HAXsVImhz327c_8mlCC_Wgjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278924520494-pgebv45q48c1p719k31b1r5jnpatfnfu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

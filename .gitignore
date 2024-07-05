@@ -33,6 +33,8 @@ migrate_working_dir/
 /unity/
 /android/unityLibrary/
 /gemma/
+firebase.json
+/lib/firebase_options.dart
 
 # Symbolication related
 app.*.symbols

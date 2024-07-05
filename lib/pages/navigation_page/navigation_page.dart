@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/create_page/create_page.dart';
+import 'package:gadc/pages/profile_page/profile_page.dart';
 import 'package:gadc/pages/space_page/space_page.dart';
 import 'package:gadc/pages/nearby_page/nearby_page.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
@@ -30,6 +31,8 @@ class _NavigationPage extends State<NavigationPage> {
         return SpacePage();
       case 2:
         return CreatePage();
+      case 3:
+        return const ProfilePage();
       default:
         return const SurroundingPage();
     }
@@ -48,6 +51,10 @@ class _NavigationPage extends State<NavigationPage> {
       case 2:
         return const CustomAppDrawer(
           pageName: 'CREATE',
+        );
+      case 3:
+        return const CustomAppDrawer(
+          pageName: 'PROFILE',
         );
       default:
         return const CustomAppDrawer(
