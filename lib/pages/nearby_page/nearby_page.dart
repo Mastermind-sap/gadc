@@ -195,14 +195,14 @@ class _SurroundingPageState extends State<SurroundingPage> {
                         itemCount: places.length,
                         itemBuilder: (context, index) {
                           final place = places[index];
-                          return FutureBuilder<String?>(
-                            future: getPlaceImageUrl(place['name']),
+                          return FutureBuilder<List<String>>(
+                            future: getWikipediaImageUrls(place['name']),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return const CircularProgressIndicator();
                               }
-                              final imageUrl = snapshot.data!;
+                              final imageUrls = snapshot.data!;
 
                               return Stack(
                                 children: [
@@ -210,7 +210,7 @@ class _SurroundingPageState extends State<SurroundingPage> {
                                     title: place['name'],
                                     location:
                                         '${place['latitude']}, ${place['longitude']}',
-                                    imageUrl: imageUrl,
+                                    imageUrls: imageUrls,
                                     imageBuilder: (context, imageProvider) =>
                                         Container(
                                       decoration: BoxDecoration(
