@@ -17,7 +17,7 @@ class CategoryCard extends StatelessWidget {
       color: (Theme.of(context).brightness == Brightness.dark)
           ? const Color.fromARGB(255, 29, 36, 40)
           : Colors.white,
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

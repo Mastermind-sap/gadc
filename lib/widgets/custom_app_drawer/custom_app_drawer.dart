@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/gemma/download_gemma.dart';
 import 'package:gadc/functions/gemma/gemma_exits.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:lottie/lottie.dart';
 
 class CustomAppDrawer extends StatefulWidget {
@@ -206,27 +209,34 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Align(
+                                        Align(
                                           alignment:
-                                              AlignmentDirectional(-1, 0),
-                                          child: Text(
-                                            'Gaurav',
-                                            style: TextStyle(
-                                              fontSize: 36,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 40,
-                                          height: 40,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Image.asset(
-                                            'assets/icon.jpg',
-                                            fit: BoxFit.cover,
-                                          ),
+                                              const AlignmentDirectional(-1, 0),
+                                          child: (getUserName() == "None")
+                                              ? GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.of(context).push(
+                                                      fromBottomRoute(
+                                                          const NavigationPage(
+                                                        initialIndex: 3,
+                                                      )),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'user..?',
+                                                    style: TextStyle(
+                                                      fontSize: 36,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Text(
+                                                  getUserName(),
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Readex Pro',
+                                                    fontSize: 24,
+                                                    letterSpacing: 0,
+                                                  ),
+                                                ),
                                         ),
                                       ],
                                     ),

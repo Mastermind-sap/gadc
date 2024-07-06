@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gadc/functions/gemini/categories/fetchTourismPlaces.dart';
+import 'package:gadc/functions/gemini/categories/imageSearch.dart';
 import 'package:gadc/widgets/custom_category_card/custom_category_card.dart';
 import 'package:gadc/widgets/custom_grid_card/custom_grid_card.dart';
 
@@ -8,21 +10,45 @@ class SurroundingPage extends StatefulWidget {
   });
 
   @override
-  State<SurroundingPage> createState() => _SurroundingPage();
+  State<SurroundingPage> createState() => _SurroundingPageState();
 }
 
-class _SurroundingPage extends State<SurroundingPage> {
+class _SurroundingPageState extends State<SurroundingPage> {
+  List<dynamic> places = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadTourismPlaces();
+  }
+
+  Future<void> loadTourismPlaces() async {
+    try {
+      List<dynamic> fetchedPlaces = await fetchTourismPlaces();
+      setState(() {
+        places = fetchedPlaces;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsetsDirectional.fromSTEB(8, 16, 8, 0),
+        padding: const EdgeInsetsDirectional.fromSTEB(8, 16, 8, 0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -125,7 +151,7 @@ class _SurroundingPage extends State<SurroundingPage> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   scrollDirection: Axis.horizontal,
-                  children: [
+                  children: const [
                     CategoryCard(
                       icon: Icons.tour_outlined,
                       label: 'Tourism',
@@ -139,11 +165,10 @@ class _SurroundingPage extends State<SurroundingPage> {
                       label: 'Historical',
                     ),
                   ],
-                  // .divide(SizedBox(width: 8)),
                 ),
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsetsDirectional.fromSTEB(16, 8, 0, 8),
               child: Text(
                 'Searches for location: Current',
@@ -155,34 +180,60 @@ class _SurroundingPage extends State<SurroundingPage> {
             ),
             Expanded(
               child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
-                child: GridView(
-                  padding: EdgeInsets.zero,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 1,
-                  ),
-                  scrollDirection: Axis.vertical,
-                  children: [
-                    GridCard(
-                      title: 'National Institute of Technology Silchar',
-                      location: '23.78, 91.93',
-                      imageUrl: 'https://picsum.photos/seed/101/600',
-                    ),
-                    GridCard(
-                      title: 'Assam University Silchar',
-                      location: '23.78, 91.93',
-                      imageUrl: 'https://picsum.photos/seed/101/600',
-                    ),
-                    GridCard(
-                      title: 'Indian Institute of Technology Guwahati',
-                      location: '23.78, 91.93',
-                      imageUrl: 'https://picsum.photos/seed/101/600',
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : GridView.builder(
+                        padding: EdgeInsets.zero,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 1,
+                        ),
+                        itemCount: places.length,
+                        itemBuilder: (context, index) {
+                          final place = places[index];
+                          return FutureBuilder<String?>(
+                            future: getPlaceImageUrl(place['name']),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+                              final imageUrl = snapshot.data!;
+
+                              return Stack(
+                                children: [
+                                  GridCard(
+                                    title: place['name'],
+                                    location:
+                                        '${place['latitude']}, ${place['longitude']}',
+                                    imageUrl: imageUrl,
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
               ),
             ),
           ],

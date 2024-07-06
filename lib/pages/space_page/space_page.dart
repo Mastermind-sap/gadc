@@ -1,119 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_unity_widget/flutter_unity_widget.dart';
+import 'package:gadc/functions/gemini/categories/imageSearch.dart';
 
-class SpacePage extends StatelessWidget {
+class SpacePage extends StatefulWidget {
   SpacePage({super.key});
 
-  UnityWidgetController? _unityWidgetController;
+  @override
+  _SpacePageState createState() => _SpacePageState();
+}
 
-  // Callback that connects the created controller to the unity controller, (Need to Work on this)
-  void onUnityCreated(controller) {
-    _unityWidgetController = controller;
+class _SpacePageState extends State<SpacePage> {
+  String? _imageUrl;
+  bool _isLoading = false;
+
+  Future<void> _searchImage(String placeName) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final pageTitle = await searchPlace(placeName);
+    if (pageTitle != null) {
+      final imageUrl = await getImageUrl(pageTitle);
+      setState(() {
+        _imageUrl = imageUrl;
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Flexible(
-          child: Align(
-            alignment: const AlignmentDirectional(0, -1),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  borderRadius: BorderRadius.circular(24),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Wikipedia Image Search'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Enter a place name',
+                  border: OutlineInputBorder(),
                 ),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
-                      child: UnityWidget(
-                        onUnityCreated: onUnityCreated,
-                      ),
-                    ),
-                    Align(
-                      alignment: const AlignmentDirectional(1, 0),
-                      child: Card(
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        color: Theme.of(context).secondaryHeaderColor,
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'Floor',
-                                style: TextStyle(
-                                  fontFamily: 'Readex Pro',
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 26,
-                                child: Divider(
-                                  thickness: 1,
-                                ),
-                              ),
-                              for (var floor in [
-                                '8',
-                                '7',
-                                '6',
-                                '5',
-                                '4',
-                                '3',
-                                '2',
-                                '1',
-                                'GND'
-                              ])
-                                Text(
-                                  floor,
-                                  style: TextStyle(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: floor == '5' ? 36 : null,
-                                  ),
-                                ),
-                              const SizedBox(
-                                width: 26,
-                                child: Divider(
-                                  thickness: 1,
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(2),
-                                child: Icon(
-                                  Icons.arrow_drop_up,
-                                  size: 24,
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(2),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                onSubmitted: _searchImage,
               ),
-            ),
+              SizedBox(height: 20),
+              _isLoading
+                  ? CircularProgressIndicator()
+                  : _imageUrl != null
+                      ? Image.network(_imageUrl!)
+                      : Text('No image found'),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

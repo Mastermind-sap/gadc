@@ -53,6 +53,9 @@ dependencies:
   firebase_core: ^3.1.1
   firebase_auth: ^5.1.1
   google_sign_in: ^6.2.1
+  flutter_dotenv: ^5.1.0
+  google_generative_ai: ^0.4.3
+  cached_network_image: ^3.3.1
   
 
 dev_dependencies:
@@ -83,6 +86,9 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/splash_screen.json
+    - assets/empty_dark.json
+    - assets/empty_light.json
+    - assets/anonymous_profile.png
     - assets/icon.png
     - assets/pin.png
     - assets/loading_gradient.json
