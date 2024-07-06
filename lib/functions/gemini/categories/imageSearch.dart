@@ -15,51 +15,66 @@ Future<String?> searchPlace(String placeName) async {
   return null;
 }
 
-Future<String?> getImageUrl(String pageTitle) async {
-  final contentUrl = Uri.parse(
-      'https://en.wikipedia.org/w/api.php?action=query&titles=$pageTitle&prop=pageimages&format=json&pithumbsize=500');
-  final response = await http.get(contentUrl);
+Future<List<String>> fetchWikipediaImages(String title) async {
+  final response = await http.get(Uri.parse(
+      'https://en.wikipedia.org/w/api.php?action=query&titles=$title&prop=images&format=json'));
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     final pages = data['query']['pages'];
-    if (pages.isNotEmpty) {
-      final page = pages.entries.first.value;
-      if (page.containsKey('thumbnail')) {
-        return page['thumbnail']['source'];
-      }
-    }
+    final page = pages[pages.keys.first];
+    final images = page['images'] as List<dynamic>;
+
+    final imageTitles =
+        images.map((image) => image['title'] as String).toList();
+    return imageTitles;
+  } else {
+    throw Exception('Failed to load images');
   }
-  return null;
 }
 
-Future<String?> getPlaceImageUrl(String placeName) async {
-  // Step 1: Search for the place
-  final searchUrl = Uri.parse(
-      'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=$placeName&format=json');
-  final searchResponse = await http.get(searchUrl);
+Future<List<String>> fetchImageUrls(List<String> imageTitles) async {
+  List<String> imageUrls = [];
 
-  if (searchResponse.statusCode == 200) {
-    final searchData = json.decode(searchResponse.body);
-    if (searchData['query']['search'].isNotEmpty) {
-      final pageTitle = searchData['query']['search'][0]['title'];
+  for (String imageTitle in imageTitles) {
+    final response = await http.get(Uri.parse(
+        'https://en.wikipedia.org/w/api.php?action=query&titles=$imageTitle&prop=imageinfo&iiprop=url&format=json'));
 
-      // Step 2: Get the image URL for the place
-      final contentUrl = Uri.parse(
-          'https://en.wikipedia.org/w/api.php?action=query&titles=$pageTitle&prop=pageimages&format=json&pithumbsize=500');
-      final contentResponse = await http.get(contentUrl);
-
-      if (contentResponse.statusCode == 200) {
-        final contentData = json.decode(contentResponse.body);
-        final pages = contentData['query']['pages'];
-        if (pages.isNotEmpty) {
-          final page = pages.entries.first.value;
-          if (page.containsKey('thumbnail')) {
-            return page['thumbnail']['source'];
-          }
-        }
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final pages = data['query']['pages'];
+      final page = pages[pages.keys.first];
+      final imageInfo = page['imageinfo'] as List<dynamic>;
+      if (imageInfo != null && imageInfo.isNotEmpty) {
+        imageUrls.add(imageInfo.first['url'] as String);
       }
     }
   }
-  return null;
+
+  return imageUrls;
+}
+
+Future<String> getWikipediaImagesJson(String title) async {
+  try {
+    final imageTitles = await fetchWikipediaImages(title);
+    final imageUrls = await fetchImageUrls(imageTitles);
+    return json.encode({'images': imageUrls});
+  } catch (e) {
+    return json.encode({'error': e.toString()});
+  }
+}
+
+Future<List<String>> getWikipediaImageUrls(String name) async {
+  try {
+    final title = await searchPlace(name);
+    if (title != null) {
+      final imageTitles = await fetchWikipediaImages(title);
+      final imageUrls = await fetchImageUrls(imageTitles);
+      return imageUrls;
+    } else {
+      throw Exception('Place not found');
+    }
+  } catch (e) {
+    throw Exception('Failed to fetch image URLs: $e');
+  }
 }

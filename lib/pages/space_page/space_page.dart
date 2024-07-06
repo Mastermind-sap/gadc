@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/gemini/categories/imageSearch.dart';
+import 'package:gadc/functions/network_image/networkImageWithSvg.dart';
 
 class SpacePage extends StatefulWidget {
   SpacePage({super.key});
@@ -19,9 +20,9 @@ class _SpacePageState extends State<SpacePage> {
 
     final pageTitle = await searchPlace(placeName);
     if (pageTitle != null) {
-      final imageUrl = await getImageUrl(pageTitle);
+      final imageUrl = await getWikipediaImageUrls(pageTitle);
       setState(() {
-        _imageUrl = imageUrl;
+        _imageUrl = imageUrl[1];
       });
     }
 
@@ -53,7 +54,11 @@ class _SpacePageState extends State<SpacePage> {
               _isLoading
                   ? CircularProgressIndicator()
                   : _imageUrl != null
-                      ? Image.network(_imageUrl!)
+                      ? NetworkImageWithSVG(
+                          url: _imageUrl!,
+                          height: 200,
+                          width: 200,
+                        )
                       : Text('No image found'),
             ],
           ),
