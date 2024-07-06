@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/gemini/categories/fetchTourismPlaces.dart';
 import 'package:gadc/functions/gemini/categories/imageSearch.dart';
+import 'package:gadc/functions/location/locate_me.dart';
 import 'package:gadc/widgets/custom_category_card/custom_category_card.dart';
 import 'package:gadc/widgets/custom_grid_card/custom_grid_card.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SurroundingPage extends StatefulWidget {
   const SurroundingPage({
@@ -16,6 +18,7 @@ class SurroundingPage extends StatefulWidget {
 class _SurroundingPageState extends State<SurroundingPage> {
   List<dynamic> places = [];
   bool isLoading = true;
+  String category = "Tourism";
 
   @override
   void initState() {
@@ -24,8 +27,10 @@ class _SurroundingPageState extends State<SurroundingPage> {
   }
 
   Future<void> loadTourismPlaces() async {
+    Position pos = await locateMe();
     try {
-      List<dynamic> fetchedPlaces = await fetchTourismPlaces();
+      List<dynamic> fetchedPlaces =
+          await fetchTourismPlaces(category, pos.latitude, pos.longitude);
       setState(() {
         places = fetchedPlaces;
         isLoading = false;

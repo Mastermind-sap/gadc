@@ -44,7 +44,7 @@ class _GridCardState extends State<GridCard> {
 
       _pageController.animateToPage(
         _currentPage,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeIn,
       );
     });

@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
-Future<List<dynamic>> fetchTourismPlaces() async {
+Future<List<dynamic>> fetchTourismPlaces(
+    String cat, double lat, double long) async {
   // Load your API key from environment variables or directly if it's hardcoded
   final String apiKey = GEMINI_API_KEY;
 
@@ -14,7 +15,7 @@ Future<List<dynamic>> fetchTourismPlaces() async {
 
   // Define the prompt for generating tourism places
   final prompt = '''
-    input: give me 25 tourism places nearby to lat: 28.7041, lang: 77.1025, in json format with the latitude, longitude, name of the place
+    input: give me 25 $cat places nearby to lat: ${lat.toString()}, lang: ${long.toString()}, in json format with the latitude, longitude, name of the place
     output: 
   ''';
 
