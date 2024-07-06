@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/location/geocoding.dart';
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
@@ -165,28 +166,42 @@ class _ExplorePageState extends State<ExplorePage> {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Card(
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.dark)
-                                  ? const Color.fromARGB(255, 29, 36, 40)
-                                  : Colors.white,
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(1),
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Image.asset(
-                                    'assets/icon.jpg',
-                                    fit: BoxFit.cover,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  fromBottomRoute(const NavigationPage(
+                                    initialIndex: 3,
+                                  )),
+                                );
+                              },
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color: (Theme.of(context).brightness ==
+                                        Brightness.dark)
+                                    ? const Color.fromARGB(255, 29, 36, 40)
+                                    : Colors.white,
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(0),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: (getUserImageUrl() != "None")
+                                        ? Image.network(
+                                            getUserImageUrl(),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            "assets/anonymous_profile.png",
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
                                 ),
                               ),

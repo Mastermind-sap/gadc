@@ -7,17 +7,26 @@ import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
 class NavigationPage extends StatefulWidget {
+  final int initialIndex;
+
   const NavigationPage({
-    super.key,
-  });
+    Key? key,
+    this.initialIndex = 0,
+  }) : super(key: key);
 
   @override
-  State<NavigationPage> createState() => _NavigationPage();
+  State<NavigationPage> createState() => _NavigationPageState();
 }
 
-class _NavigationPage extends State<NavigationPage> {
-  int currentBottomIndex = 0;
+class _NavigationPageState extends State<NavigationPage> {
+  late int currentBottomIndex;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    currentBottomIndex = widget.initialIndex;
+  }
 
   void openDrawer() {
     _scaffoldKey.currentState!.openDrawer();
@@ -72,6 +81,7 @@ class _NavigationPage extends State<NavigationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: getDrawer(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
