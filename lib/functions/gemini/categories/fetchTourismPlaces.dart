@@ -15,8 +15,7 @@ Future<List<dynamic>> fetchTourismPlaces(
 
   // Define the prompt for generating tourism places
   final prompt = '''
-    input: give me 25 $cat places nearby to lat: ${lat.toString()}, lang: ${long.toString()}, in json format with the latitude, longitude, name of the place
-    output: 
+    input: give me 15 $cat places nearby to lat: ${lat.toString()}, lang: ${long.toString()}, in json format with the latitude, longitude, name of the place
   ''';
 
   final content = [Content.text(prompt)];
@@ -32,6 +31,8 @@ Future<List<dynamic>> fetchTourismPlaces(
     jsonContent = "[$jsonContent]";
 
     final data = jsonDecode(jsonContent);
+
+    print(data);
 
     return data;
   } catch (e) {
