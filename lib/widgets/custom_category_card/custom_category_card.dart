@@ -3,42 +3,44 @@ import 'package:flutter/material.dart';
 class CategoryCard extends StatelessWidget {
   final IconData icon;
   final String label;
+  final bool isSelected;
 
   const CategoryCard({
     Key? key,
     required this.icon,
     required this.label,
+    this.isSelected = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: (Theme.of(context).brightness == Brightness.dark)
-          ? const Color.fromARGB(255, 29, 36, 40)
-          : Colors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'Readex Pro',
-                fontSize: 16,
-                letterSpacing: 0,
+    return SizedBox(
+      width: 150,
+      child: Card(
+        elevation: 4,
+        color: isSelected
+            ? Theme.of(context).colorScheme.secondary
+            : (Theme.of(context).brightness == Brightness.dark)
+                ? const Color.fromARGB(255, 29, 36, 40)
+                : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: isSelected ? Colors.white : null),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : null,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

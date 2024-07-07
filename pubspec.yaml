@@ -57,6 +57,7 @@ dependencies:
   google_generative_ai: ^0.4.3
   cached_network_image: ^3.3.1
   flutter_svg: ^2.0.10+1
+  shimmer: ^3.0.0
   
 
 dev_dependencies:

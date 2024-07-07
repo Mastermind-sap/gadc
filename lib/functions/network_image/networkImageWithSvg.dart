@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class NetworkImageWithSVG extends StatelessWidget {
   final String url;
@@ -28,27 +29,14 @@ class NetworkImageWithSVG extends StatelessWidget {
             placeholder ?? CircularProgressIndicator(),
       );
     } else {
-      return Image.network(
-        url,
+      return CachedNetworkImage(
+        imageUrl: url,
         fit: fit,
         width: width,
         height: height,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          } else {
-            return Center(
-              child: placeholder ??
-                  CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            (loadingProgress.expectedTotalBytes!)
-                        : null,
-                  ),
-            );
-          }
-        },
+        placeholder: (context, url) =>
+            placeholder ?? CircularProgressIndicator(),
+        errorWidget: (context, url, error) => Icon(Icons.error),
       );
     }
   }

@@ -4,6 +4,8 @@ import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/gemma/download_gemma.dart';
 import 'package:gadc/functions/gemma/gemma_exits.dart';
+import 'package:gadc/functions/location/geocoding.dart';
+import 'package:gadc/functions/location/locate_me.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:lottie/lottie.dart';
@@ -19,6 +21,9 @@ class CustomAppDrawer extends StatefulWidget {
 class _CustomAppDrawerState extends State<CustomAppDrawer>
     with WidgetsBindingObserver {
   bool _isKeyboardVisible = false;
+  GeocodingService geocoder = GeocodingService();
+  double curr_lat = 0;
+  double curr_long = 0;
 
   @override
   void initState() {
@@ -160,18 +165,50 @@ class _CustomAppDrawerState extends State<CustomAppDrawer>
                                           ),
                                         ),
                                       ),
-                                      const Text(
-                                        '26.1158, 91.7086',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'Guwahati',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                        ),
-                                      ),
+                                      FutureBuilder(
+                                          future: locateMe(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Text(
+                                                '26.1158, 91.7086',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                ),
+                                              );
+                                            }
+                                            curr_lat = snapshot.data!.latitude;
+                                            curr_long =
+                                                snapshot.data!.longitude;
+                                            return Text(
+                                              ("$curr_lat, $curr_long")
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                              ),
+                                            );
+                                          }),
+                                      FutureBuilder(
+                                          future: geocoder
+                                              .getAddressFromCoordinates(
+                                                  curr_lat, curr_long),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Text(
+                                                'None',
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                ),
+                                              );
+                                            }
+                                            return Text(
+                                              snapshot.data!,
+                                              style: const TextStyle(
+                                                fontSize: 24,
+                                              ),
+                                            );
+                                          }),
                                     ],
                                   ),
                                 ],
