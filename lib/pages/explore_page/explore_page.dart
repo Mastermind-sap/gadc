@@ -77,20 +77,12 @@ class _ExplorePageState extends State<ExplorePage> {
                               onTap: () {
                                 widget.drawerKey();
                               },
-                              child: Card(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: (Theme.of(context).brightness ==
-                                        Brightness.dark)
-                                    ? const Color.fromARGB(255, 29, 36, 40)
-                                    : Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.notes,
-                                  ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Icon(
+                                  Icons.notes,
+                                  color: Color.fromARGB(255, 29, 36, 40),
+                                  size: 30,
                                 ),
                               ),
                             ),
