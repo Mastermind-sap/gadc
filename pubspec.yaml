@@ -88,7 +88,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/splash_screen.json
-    - assets/empty_dark.json
+    - assets/no_result.json
     - assets/empty_light.json
     - assets/anonymous_profile.png
     - assets/icon.png
