@@ -3,8 +3,13 @@ import 'package:gadc/pages/nearby_page/fav_page.dart';
 import 'package:gadc/pages/nearby_page/nearby_main_page.dart';
 
 class SurroundingPage extends StatefulWidget {
+  final double? latitude;
+  final double? longitude;
+
   const SurroundingPage({
     super.key,
+    this.latitude,
+    this.longitude,
   });
 
   @override
@@ -63,7 +68,7 @@ class _SurroundingPageState extends State<SurroundingPage>
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   Expanded(
@@ -92,9 +97,12 @@ class _SurroundingPageState extends State<SurroundingPage>
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: const [
-                  NearbyMainPage(),
-                  FavPage(),
+                children: [
+                  NearbyMainPage(
+                    latitude: widget.latitude,
+                    longitude: widget.longitude,
+                  ),
+                  const FavPage(),
                 ],
               ),
             ),

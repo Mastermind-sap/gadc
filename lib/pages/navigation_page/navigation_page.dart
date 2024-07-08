@@ -7,10 +7,14 @@ import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
 class NavigationPage extends StatefulWidget {
   final int initialIndex;
+  final double? latitude;
+  final double? longitude;
 
   const NavigationPage({
     Key? key,
     this.initialIndex = 0,
+    this.latitude,
+    this.longitude,
   }) : super(key: key);
 
   @override
@@ -34,13 +38,19 @@ class _NavigationPageState extends State<NavigationPage> {
   Widget getPage() {
     switch (currentBottomIndex) {
       case 0:
-        return const SurroundingPage();
+        return SurroundingPage(
+          latitude: widget.latitude,
+          longitude: widget.longitude,
+        );
       case 1:
         return CreatePage();
       case 2:
         return const ProfilePage();
       default:
-        return const SurroundingPage();
+        return SurroundingPage(
+          latitude: widget.latitude,
+          longitude: widget.longitude,
+        );
     }
   }
 

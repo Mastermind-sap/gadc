@@ -81,7 +81,6 @@ class _ExplorePageState extends State<ExplorePage> {
                                 padding: EdgeInsets.all(8),
                                 child: Icon(
                                   Icons.notes,
-                                  color: Color.fromARGB(255, 29, 36, 40),
                                   size: 30,
                                 ),
                               ),
@@ -104,28 +103,28 @@ class _ExplorePageState extends State<ExplorePage> {
                                   labelText: 'Search Aura',
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   errorBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),

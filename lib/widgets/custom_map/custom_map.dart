@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:gadc/caching/get_cache_directory.dart';
 import 'package:gadc/functions/bottom_modal/bottom_modal_on_map.dart';
+import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
@@ -18,7 +19,8 @@ class CustomMap extends StatefulWidget {
   final BuildContext context;
   final double zoom;
 
-  CustomMap({
+  const CustomMap({
+    super.key,
     required this.myLat,
     required this.myLong,
     required this.centerLat,
@@ -58,13 +60,14 @@ class _CustomMapState extends State<CustomMap> {
     });
   }
 
-  double _calculateDistance(LatLng point1, LatLng point2) {
-    final distance = Distance();
-    return distance.as(LengthUnit.Meter, point1, point2);
-  }
-
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    String tileLayerUrl = isDarkMode
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
     return FutureBuilder(
       future: getCacheDirectory(),
       builder: (context, snapshot) {
@@ -88,9 +91,7 @@ class _CustomMapState extends State<CustomMap> {
                 InteractiveFlag.flingAnimation, // Use specific flags
             initialCenter: LatLng(widget.myLat, widget.myLong),
             initialZoom: widget.zoom,
-            backgroundColor: (Theme.of(context).brightness == Brightness.dark)
-                ? Colors.black
-                : Colors.white,
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
             onMapReady: () {
               // Get the initial map center when the map is ready
               widget.updateMapCenter();
@@ -105,7 +106,9 @@ class _CustomMapState extends State<CustomMap> {
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              urlTemplate: tileLayerUrl,
+              subdomains: ['a', 'b', 'c'],
+              retinaMode: true,
               userAgentPackageName: 'dev.fleaflet.flutter_map.example',
               tileProvider: CachedTileProvider(
                 // maxStale keeps the tile cached for the given Duration and
@@ -124,10 +127,10 @@ class _CustomMapState extends State<CustomMap> {
                   point: LatLng(widget.myLat, widget.myLong),
                   width: 20,
                   height: 20,
-                  child: Image.asset("assets/pin.png"),
+                  child: Icon(Icons.location_pin),
                 ),
                 // Other Location Marker
-                if (_calculateDistance(LatLng(widget.myLat, widget.myLong),
+                if (calculateDistance(LatLng(widget.myLat, widget.myLong),
                         LatLng(widget.centerLat, widget.centerLong)) >
                     50.0) // Distance threshold in meters
                   Marker(

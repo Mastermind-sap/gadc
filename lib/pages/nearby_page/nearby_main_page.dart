@@ -12,7 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class NearbyMainPage extends StatefulWidget {
-  const NearbyMainPage({super.key});
+  final double? latitude;
+  final double? longitude;
+
+  const NearbyMainPage({super.key, this.latitude, this.longitude});
 
   @override
   State<NearbyMainPage> createState() => _NearbyMainPageState();
@@ -39,11 +42,6 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
     String? savedCategory = prefs.getString('selected_category');
     setState(() {
       category = savedCategory ?? "Tourism";
-      categories.sort((a, b) => a['label'] == category
-          ? -1
-          : b['label'] == category
-              ? 1
-              : 0);
     });
 
     // Prefetch data for all categories
@@ -56,6 +54,22 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
 
   Future<void> loadPlacesForCategory(String category) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (widget.latitude != null && widget.longitude != null) {
+      // Fetch new data if specific location is provided
+      try {
+        List<dynamic> fetchedPlaces = await fetchTourismPlaces(
+            category, widget.latitude!, widget.longitude!);
+        if (category == this.category) {
+          setState(() {
+            places = fetchedPlaces;
+          });
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
+      return;
+    }
 
     // Attempt to retrieve cached data
     String? cachedData = prefs.getString('places_$category');
@@ -140,11 +154,6 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
       category = newCategory;
       isLoading = true;
       places = [];
-      categories.sort((a, b) => a['label'] == category
-          ? -1
-          : b['label'] == category
-              ? 1
-              : 0);
     });
 
     // Load places for the selected category
@@ -189,15 +198,23 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(16, 8, 0, 8),
-              child: Text(
-                'Searches for location: Current',
-                style: TextStyle(
-                  fontFamily: 'Readex Pro',
-                  letterSpacing: 0,
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 0, 8),
+              child: (widget.latitude == null)
+                  ? const Text(
+                      'Searches for location: Current',
+                      style: TextStyle(
+                        fontFamily: 'Readex Pro',
+                        letterSpacing: 0,
+                      ),
+                    )
+                  : Text(
+                      'Searches for location: ${widget.latitude}, ${widget.longitude}',
+                      style: TextStyle(
+                        fontFamily: 'Readex Pro',
+                        letterSpacing: 0,
+                      ),
+                    ),
             ),
             Expanded(
               child: Padding(

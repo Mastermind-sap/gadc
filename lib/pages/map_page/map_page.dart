@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
-import 'package:gadc/functions/toast/show_toast.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -184,7 +186,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                     child: Icon(
                       Icons.my_location_rounded,
                       size: 36,
-                      color: Color.fromARGB(255, 29, 36, 40),
                     ),
                   ),
                 ),
@@ -205,7 +206,29 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            showToast(_updateMapCenter().toString());
+                            if (calculateDistance(
+                                    LatLng(currLat, currLong),
+                                    LatLng(_updateMapCenter().latitude,
+                                        _updateMapCenter().longitude)) <
+                                50) {
+                              Navigator.of(context).push(
+                                fromBottomRoute(
+                                  const NavigationPage(
+                                    initialIndex: 0,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              Navigator.of(context).push(
+                                fromBottomRoute(
+                                  NavigationPage(
+                                    initialIndex: 0,
+                                    latitude: _updateMapCenter().latitude,
+                                    longitude: _updateMapCenter().longitude,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           child: const Icon(
                             Icons.near_me_rounded,
