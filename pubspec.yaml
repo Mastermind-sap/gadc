@@ -58,6 +58,7 @@ dependencies:
   cached_network_image: ^3.3.1
   flutter_svg: ^2.0.10+1
   shimmer: ^3.0.0
+  sensors_plus: ^5.0.1
   
 
 dev_dependencies:
@@ -88,7 +89,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/splash_screen.json
-    - assets/empty_dark.json
+    - assets/current_pointer.png
+    - assets/no_result.json
     - assets/empty_light.json
     - assets/anonymous_profile.png
     - assets/icon.png

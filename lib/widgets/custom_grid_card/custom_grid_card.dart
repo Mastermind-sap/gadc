@@ -39,29 +39,36 @@ class _GridCardState extends State<GridCard> {
     if (widget.imageUrls.isNotEmpty) {
       _timer = Timer.periodic(Duration(seconds: 10 + Random().nextInt(5)),
           (Timer timer) {
-        if (_currentPage < widget.imageUrls.length - 1) {
-          _currentPage++;
-        } else {
-          _currentPage = 0;
-        }
-
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            _currentPage,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeIn,
-          );
-        }
+        _handlePageChange();
       });
+    }
+  }
+
+  void _handlePageChange() {
+    if (_currentPage < widget.imageUrls.length - 1) {
+      setState(() {
+        _currentPage++;
+      });
+    } else {
+      setState(() {
+        _currentPage = 0;
+      });
+    }
+
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeIn,
+      );
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Ensure this runs only once after initState
     if (!_initialized) {
-      precacheImages();
+      // precacheImages(); // Consider not precaching here if it slows down initial load
       _initialized = true;
     }
   }
@@ -73,49 +80,77 @@ class _GridCardState extends State<GridCard> {
     super.dispose();
   }
 
-  void precacheImages() {
-    for (String imageUrl in widget.imageUrls) {
-      if (imageUrl.isNotEmpty) {
-        precacheImage(CachedNetworkImageProvider(imageUrl), context);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Stack(
+        fit: StackFit.expand,
         children: [
           if (widget.imageUrls.isNotEmpty)
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.imageUrls.length,
-                itemBuilder: (context, index) {
-                  return CachedNetworkImage(
-                    imageUrl: widget.imageUrls[index],
-                    imageBuilder: widget.imageBuilder,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        color: Colors.white,
+            PageView.custom(
+              controller: _pageController,
+              physics: const BouncingScrollPhysics(),
+              childrenDelegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.imageUrls[index],
+                      imageBuilder: widget.imageBuilder,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          color: Colors.white,
+                        ),
                       ),
+                      errorWidget: (context, url, error) =>
+                          widget.errorWidget(context, url, error),
                     ),
-                    errorWidget: widget.errorWidget,
                   );
                 },
+                childCount: widget.imageUrls.length,
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(widget.title,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(widget.location),
+          Positioned(
+            bottom: 0.0,
+            right: 0.0,
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+              ),
+              child: Container(
+                color: Colors.black54,
+                padding: const EdgeInsets.all(8.0),
+                width: 140,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        widget.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        widget.location,
+                        style: TextStyle(color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),

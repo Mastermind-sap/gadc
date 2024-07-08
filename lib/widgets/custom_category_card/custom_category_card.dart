@@ -17,9 +17,11 @@ class CategoryCard extends StatelessWidget {
     return SizedBox(
       width: 150,
       child: Card(
-        elevation: 4,
+        elevation: 2,
         color: isSelected
-            ? Theme.of(context).colorScheme.secondary
+            ? (Theme.of(context).brightness == Brightness.dark)
+                ? const Color.fromARGB(255, 161, 130, 255)
+                : const Color.fromARGB(255, 161, 130, 255)
             : (Theme.of(context).brightness == Brightness.dark)
                 ? const Color.fromARGB(255, 29, 36, 40)
                 : Colors.white,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -22,11 +25,14 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   late final _animatedMapController = AnimatedMapController(vsync: this);
   ValueNotifier<LatLng> _mapCenterNotifier =
       ValueNotifier<LatLng>(const LatLng(21, 78));
+  ValueNotifier<LatLng> mapCenterValueNotifier =
+      ValueNotifier<LatLng>(LatLng(0, 0));
 
   @override
   void initState() {
     super.initState();
     startLocationUpdates();
+    startListeningToMapCenterChanges();
   }
 
   @override
@@ -73,9 +79,26 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     });
   }
 
-  // to get the center coordinates of the map, (will come to use in reverse geo-coding)
+// Function to get the current map center
   LatLng _updateMapCenter() {
     return _animatedMapController.mapController.camera.center;
+  }
+
+// Function to update another variable when _updateMapCenter changes
+  void updateAnotherVariable() {
+    LatLng newCenter = _updateMapCenter();
+
+    // Check if the center has changed
+    if (mapCenterValueNotifier.value != newCenter) {
+      mapCenterValueNotifier.value = newCenter;
+    }
+  }
+
+// Example of using a listener or a periodic check to detect changes
+  void startListeningToMapCenterChanges() {
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      updateAnotherVariable();
+    });
   }
 
   void animateMapView(double lat, double long, double zoom) {
@@ -114,23 +137,30 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               builder: (context, mapCenter, child) {
                 currLat = mapCenter.latitude;
                 currLong = mapCenter.longitude;
-                if (appFirstTimeLaunch) {
-                  return map(
-                    currLat,
-                    currLong,
-                    _animatedMapController.mapController,
-                    _updateMapCenter,
-                    context,
-                    4.5,
-                  );
-                }
-                return map(
-                  currLat,
-                  currLong,
-                  _animatedMapController.mapController,
-                  _updateMapCenter,
-                  context,
-                  17.5,
+                return ValueListenableBuilder<LatLng>(
+                  valueListenable: mapCenterValueNotifier,
+                  builder: (context, value, child) {
+                    if (appFirstTimeLaunch) {
+                      return CustomMap(
+                          myLat: currLat,
+                          myLong: currLong,
+                          centerLat: value.latitude,
+                          centerLong: value.longitude,
+                          mapController: _animatedMapController.mapController,
+                          updateMapCenter: _updateMapCenter,
+                          context: context,
+                          zoom: 4.5);
+                    }
+                    return CustomMap(
+                        myLat: currLat,
+                        myLong: currLong,
+                        centerLat: value.latitude,
+                        centerLong: value.longitude,
+                        mapController: _animatedMapController.mapController,
+                        updateMapCenter: _updateMapCenter,
+                        context: context,
+                        zoom: 17.5);
+                  },
                 );
               },
             );
@@ -151,21 +181,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                       rotation: 0,
                     );
                   },
-                  child: Card(
-                    color: (Theme.of(context).brightness == Brightness.dark)
-                        ? const Color.fromARGB(255, 29, 36, 40)
-                        : Colors.white,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Icon(
-                        Icons.my_location_rounded,
-                        size: 36,
-                      ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Icon(
+                      Icons.my_location_rounded,
+                      size: 36,
                     ),
                   ),
                 ),
@@ -179,18 +199,45 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Icon(
-                          Icons.create_rounded,
-                          size: 36,
+                        GestureDetector(
+                          onTap: () {
+                            if (calculateDistance(
+                                    LatLng(currLat, currLong),
+                                    LatLng(_updateMapCenter().latitude,
+                                        _updateMapCenter().longitude)) <
+                                50) {
+                              Navigator.of(context).push(
+                                fromBottomRoute(
+                                  const NavigationPage(
+                                    initialIndex: 0,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              Navigator.of(context).push(
+                                fromBottomRoute(
+                                  NavigationPage(
+                                    initialIndex: 0,
+                                    latitude: _updateMapCenter().latitude,
+                                    longitude: _updateMapCenter().longitude,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Icon(
+                            Icons.near_me_rounded,
+                            size: 36,
+                          ),
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: 24),
                         Icon(
-                          Icons.threed_rotation_rounded,
+                          Icons.view_in_ar_rounded,
                           size: 36,
                         ),
                       ],

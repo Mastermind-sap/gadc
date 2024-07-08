@@ -77,20 +77,11 @@ class _ExplorePageState extends State<ExplorePage> {
                               onTap: () {
                                 widget.drawerKey();
                               },
-                              child: Card(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: (Theme.of(context).brightness ==
-                                        Brightness.dark)
-                                    ? const Color.fromARGB(255, 29, 36, 40)
-                                    : Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.notes,
-                                  ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Icon(
+                                  Icons.notes,
+                                  size: 30,
                                 ),
                               ),
                             ),
@@ -112,28 +103,28 @@ class _ExplorePageState extends State<ExplorePage> {
                                   labelText: 'Search Aura',
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   errorBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(24),
@@ -170,7 +161,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   fromBottomRoute(const NavigationPage(
-                                    initialIndex: 3,
+                                    initialIndex: 2,
                                   )),
                                 );
                               },

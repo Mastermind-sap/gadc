@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/create_page/create_page.dart';
 import 'package:gadc/pages/profile_page/profile_page.dart';
-import 'package:gadc/pages/space_page/space_page.dart';
 import 'package:gadc/pages/nearby_page/nearby_page.dart';
 import 'package:gadc/widgets/custom_app_drawer/custom_app_drawer.dart';
 import 'package:gadc/widgets/custom_bottom_navbar/custom_bottom_navbar.dart';
 
 class NavigationPage extends StatefulWidget {
   final int initialIndex;
+  final double? latitude;
+  final double? longitude;
 
   const NavigationPage({
     Key? key,
     this.initialIndex = 0,
+    this.latitude,
+    this.longitude,
   }) : super(key: key);
 
   @override
@@ -35,15 +38,19 @@ class _NavigationPageState extends State<NavigationPage> {
   Widget getPage() {
     switch (currentBottomIndex) {
       case 0:
-        return const SurroundingPage();
+        return SurroundingPage(
+          latitude: widget.latitude,
+          longitude: widget.longitude,
+        );
       case 1:
-        return SpacePage();
-      case 2:
         return CreatePage();
-      case 3:
+      case 2:
         return const ProfilePage();
       default:
-        return const SurroundingPage();
+        return SurroundingPage(
+          latitude: widget.latitude,
+          longitude: widget.longitude,
+        );
     }
   }
 
@@ -55,13 +62,9 @@ class _NavigationPageState extends State<NavigationPage> {
         );
       case 1:
         return const CustomAppDrawer(
-          pageName: '3D',
-        );
-      case 2:
-        return const CustomAppDrawer(
           pageName: 'CREATE',
         );
-      case 3:
+      case 2:
         return const CustomAppDrawer(
           pageName: 'PROFILE',
         );
