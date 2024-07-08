@@ -39,24 +39,28 @@ class _GridCardState extends State<GridCard> {
     if (widget.imageUrls.isNotEmpty) {
       _timer = Timer.periodic(Duration(seconds: 10 + Random().nextInt(5)),
           (Timer timer) {
-        if (_currentPage < widget.imageUrls.length - 1) {
-          setState(() {
-            _currentPage++;
-          });
-        } else {
-          setState(() {
-            _currentPage = 0;
-          });
-        }
-
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            _currentPage,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeIn,
-          );
-        }
+        _handlePageChange();
       });
+    }
+  }
+
+  void _handlePageChange() {
+    if (_currentPage < widget.imageUrls.length - 1) {
+      setState(() {
+        _currentPage++;
+      });
+    } else {
+      setState(() {
+        _currentPage = 0;
+      });
+    }
+
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeIn,
+      );
     }
   }
 
@@ -64,7 +68,7 @@ class _GridCardState extends State<GridCard> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      precacheImages();
+      // precacheImages(); // Consider not precaching here if it slows down initial load
       _initialized = true;
     }
   }
@@ -76,14 +80,6 @@ class _GridCardState extends State<GridCard> {
     super.dispose();
   }
 
-  void precacheImages() {
-    for (String imageUrl in widget.imageUrls) {
-      if (imageUrl.isNotEmpty) {
-        precacheImage(CachedNetworkImageProvider(imageUrl), context);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -91,26 +87,30 @@ class _GridCardState extends State<GridCard> {
         fit: StackFit.expand,
         children: [
           if (widget.imageUrls.isNotEmpty)
-            PageView.builder(
+            PageView.custom(
               controller: _pageController,
-              itemCount: widget.imageUrls.length,
-              itemBuilder: (context, index) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.imageUrls[index],
-                    imageBuilder: widget.imageBuilder,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        color: Colors.white,
+              physics: const BouncingScrollPhysics(),
+              childrenDelegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.imageUrls[index],
+                      imageBuilder: widget.imageBuilder,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          color: Colors.white,
+                        ),
                       ),
+                      errorWidget: (context, url, error) =>
+                          widget.errorWidget(context, url, error),
                     ),
-                    errorWidget: widget.errorWidget,
-                  ),
-                );
-              },
+                  );
+                },
+                childCount: widget.imageUrls.length,
+              ),
             ),
           Positioned(
             bottom: 0.0,

@@ -30,10 +30,6 @@ class CustomBottomNavbar extends StatelessWidget {
               label: "Nearby",
             ),
             NavigationDestination(
-              icon: Icon(Icons.my_location),
-              label: "Space",
-            ),
-            NavigationDestination(
               icon: Icon(Icons.edit_location_alt),
               label: "Create",
             ),

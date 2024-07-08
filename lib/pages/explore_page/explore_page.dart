@@ -170,7 +170,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   fromBottomRoute(const NavigationPage(
-                                    initialIndex: 3,
+                                    initialIndex: 2,
                                   )),
                                 );
                               },
