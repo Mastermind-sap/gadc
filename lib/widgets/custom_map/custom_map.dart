@@ -8,6 +8,8 @@ import 'package:gadc/functions/bottom_modal/bottom_modal_on_map.dart';
 import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CustomMap extends StatefulWidget {
   final double myLat;
@@ -38,11 +40,13 @@ class CustomMap extends StatefulWidget {
 class _CustomMapState extends State<CustomMap> {
   late StreamSubscription<AccelerometerEvent> _accelerometerSubscription;
   ValueNotifier<double> _currentRotation = ValueNotifier(0.0);
+  List<Marker> _markers = [];
 
   @override
   void initState() {
     super.initState();
     _startListening();
+    fetchUserData();
   }
 
   @override
@@ -58,6 +62,74 @@ class _CustomMapState extends State<CustomMap> {
       double angle = event.y * 50.0; // Adjust sensitivity as needed
       _currentRotation.value = angle;
     });
+  }
+
+  void fetchUserData() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('your_collection')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      List<Marker> markers = [];
+      querySnapshot.docs.forEach((doc) {
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          markers.add(
+            Marker(
+              point: LatLng(data['latitude'], data['longitude']),
+              width: 40,
+              height: 40,
+              child: GestureDetector(
+                onTap: () {
+                  _showBottomSheet(context, data);
+                },
+                child: Icon(
+                  Icons.location_pin,
+                  color: Colors.blue,
+                  size: 40,
+                ),
+              ),
+            ),
+          );
+        }
+      });
+
+      setState(() {
+        _markers = markers;
+      });
+    } catch (error) {
+      print("Error fetching user data: $error");
+      // showToast('Failed to fetch data: $error'); // Uncomment if you have showToast function
+    }
+  }
+
+  void _showBottomSheet(BuildContext context, Map<String, dynamic> data) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Marker Information',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text('Unity Data: ${data['unityData']}'),
+              Text('Latitude: ${data['latitude']}'),
+              Text('Longitude: ${data['longitude']}'),
+              Text('Timestamp: ${data['timestamp']}'),
+              data['imageUrl'] != null
+                  ? Image.network(data['imageUrl'])
+                  : Container(),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -120,37 +192,7 @@ class _CustomMapState extends State<CustomMap> {
                 ),
               ),
             ),
-            MarkerLayer(
-              markers: [
-                // My Location
-                Marker(
-                  point: LatLng(widget.myLat, widget.myLong),
-                  width: 20,
-                  height: 20,
-                  child: Icon(Icons.location_pin),
-                ),
-                // Other Location Marker
-                if (calculateDistance(LatLng(widget.myLat, widget.myLong),
-                        LatLng(widget.centerLat, widget.centerLong)) >
-                    50.0) // Distance threshold in meters
-                  Marker(
-                    point: LatLng(widget.centerLat, widget.centerLong),
-                    width: 20,
-                    height: 20,
-                    child: AnimatedBuilder(
-                      animation: _currentRotation,
-                      builder: (context, child) {
-                        return Transform.rotate(
-                          angle: _currentRotation.value *
-                              3.1415926535 /
-                              180, // Convert degrees to radians
-                          child: Image.asset("assets/current_pointer.png"),
-                        );
-                      },
-                    ),
-                  ),
-              ],
-            ),
+            MarkerLayer(markers: _markers),
           ],
         );
       },
