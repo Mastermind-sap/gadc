@@ -60,6 +60,9 @@ dependencies:
   shimmer: ^3.0.0
   sensors_plus: ^5.0.1
   cloud_firestore: ^5.1.0
+  image_picker: ^1.1.2
+  firebase_storage: ^12.1.1
+  flutter_image_compress: ^2.3.0
   
 
 dev_dependencies:
@@ -92,7 +95,7 @@ flutter:
     - assets/splash_screen.json
     - assets/current_pointer.png
     - assets/no_result.json
-    - assets/empty_light.json
+    - assets/empty_dark.json
     - assets/anonymous_profile.png
     - assets/icon.png
     - assets/pin.png

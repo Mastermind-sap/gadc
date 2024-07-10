@@ -41,3 +41,11 @@ String getUserImageUrl() {
   User? user = FirebaseAuth.instance.currentUser;
   return user?.photoURL ?? "None";
 }
+
+Future<void> signOut() async {
+  try {
+    await FirebaseAuth.instance.signOut();
+  } catch (e) {
+    print("Error signing out: $e");
+  }
+}
