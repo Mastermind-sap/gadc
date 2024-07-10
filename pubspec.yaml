@@ -59,6 +59,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   shimmer: ^3.0.0
   sensors_plus: ^5.0.1
+  cloud_firestore: ^5.1.0
   
 
 dev_dependencies:
