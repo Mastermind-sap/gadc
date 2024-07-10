@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gadc/functions/authentication/google_auth/google_auth.dart';
+import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';

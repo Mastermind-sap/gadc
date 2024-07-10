@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class LocationSelectorMap extends StatefulWidget {
   final void Function(LatLng) onLocationSelected;
@@ -35,14 +34,12 @@ class _LocationSelectorMapState extends State<LocationSelectorMap> {
     try {
       List<String> position =
           await PastLocation().readMyLastLocation() ?? ['21', '78'];
-      // showToast(position[0]);
-      // showToast(position[1]);
       setState(() {
         _selectedLocation =
             LatLng(double.parse(position[0]), double.parse(position[1]));
       });
     } catch (e) {
-      // showToast('Error getting current location: $e');
+      showToast('Error getting current location: $e');
     }
   }
 
@@ -56,20 +53,9 @@ class _LocationSelectorMapState extends State<LocationSelectorMap> {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
 
-    setState(() async {
+    setState(() {
       if (pickedFile != null) {
-        File imageFile = File(pickedFile.path);
-        int quality = 85; // Adjust quality as needed
-        Uint8List? compressedBytes =
-            await FlutterImageCompress.compressWithFile(
-          imageFile.absolute.path,
-          quality: quality,
-        );
-
-        setState(() {
-          _imageFile = File.fromRawPath(compressedBytes!);
-        });
-
+        _imageFile = File(pickedFile.path);
         widget.onImageSelected(_imageFile); // Call the callback
       } else {
         print('No image selected.');
