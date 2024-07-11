@@ -25,6 +25,12 @@ class _CreatePageState extends State<CreatePage> {
   // Callback that connects the created controller to the unity controller
   void onUnityCreated(controller) {
     _unityWidgetController = controller;
+
+    _unityWidgetController!.postMessage(
+      'UnityMessageHandler', // The GameObject name in Unity
+      'OnUnityMessage', // The method name in UnityMessageHandler
+      'editor', // The message to send
+    );
   }
 
   // Callback to handle messages from Unity
@@ -113,11 +119,20 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: UnityWidget(
-        onUnityCreated: onUnityCreated,
-        onUnityMessage: onUnityMessageHandler,
+      body: Stack(
+        children: [
+          UnityWidget(
+            onUnityCreated: onUnityCreated,
+            onUnityMessage: onUnityMessageHandler,
+          ),
+        ],
       ),
     );
   }
