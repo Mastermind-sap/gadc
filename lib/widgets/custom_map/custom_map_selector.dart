@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
@@ -18,17 +19,38 @@ class LocationSelectorMap extends StatefulWidget {
   _LocationSelectorMapState createState() => _LocationSelectorMapState();
 }
 
-class _LocationSelectorMapState extends State<LocationSelectorMap> {
-  late MapController _mapController;
+class _LocationSelectorMapState extends State<LocationSelectorMap>
+    with TickerProviderStateMixin {
   late LatLng _selectedLocation;
   File? _imageFile;
+  late final _animatedMapController = AnimatedMapController(vsync: this);
+  ValueNotifier<LatLng> mapCenterValueNotifier =
+      ValueNotifier<LatLng>(const LatLng(0, 0));
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
     _getCurrentLocation();
   }
+
+  @override
+  void dispose() {
+    _animatedMapController.dispose();
+    super.dispose();
+  }
+
+  // LatLng _getMapCenter() {
+  //   return _animatedMapController.mapController.camera.center;
+  // }
+
+  // void updateMapCenter() {
+  //   LatLng newCenter = _getMapCenter();
+
+  //   // Check if the center has changed
+  //   if (mapCenterValueNotifier.value != newCenter) {
+  //     mapCenterValueNotifier.value = newCenter;
+  //   }
+  // }
 
   void _getCurrentLocation() async {
     try {
@@ -173,43 +195,54 @@ class _LocationSelectorMapState extends State<LocationSelectorMap> {
                   borderRadius:
                       BorderRadius.only(topRight: Radius.circular(24)),
                   child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: FlutterMap(
-                      options: MapOptions(
-                        cameraConstraint: CameraConstraint.contain(
-                          bounds: LatLngBounds(
-                            const LatLng(-90, -180),
-                            const LatLng(90, 180),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
                           ),
-                        ),
-                        keepAlive: true,
-                        minZoom: 3.0,
-                        maxZoom: 18.0,
-                        enableScrollWheel: true,
-                        interactiveFlags: InteractiveFlag.pinchZoom |
-                            InteractiveFlag.drag |
-                            InteractiveFlag.doubleTapZoom |
-                            InteractiveFlag.flingAnimation,
-                        initialCenter: _selectedLocation,
-                        initialZoom: 17.5,
+                        ],
                       ),
-                      children: [
-                        TileLayer(
-                          urlTemplate: tileLayerUrl,
-                          userAgentPackageName: 'com.example.app',
+                      child: FlutterMap(
+                        mapController: _animatedMapController.mapController,
+                        options: MapOptions(
+                          cameraConstraint: CameraConstraint.contain(
+                            bounds: LatLngBounds(
+                              LatLng(-90, -180),
+                              LatLng(90, 180),
+                            ),
+                          ),
+                          keepAlive: true,
+                          minZoom: 3.0,
+                          maxZoom: 18.0,
+                          enableScrollWheel: true,
+                          interactiveFlags: InteractiveFlag.pinchZoom |
+                              InteractiveFlag.drag |
+                              InteractiveFlag.doubleTapZoom |
+                              InteractiveFlag.flingAnimation,
+                          initialCenter: _selectedLocation,
+                          initialZoom: 17.5,
                         ),
-                      ],
-                    ),
-                  ),
+                        children: [
+                          TileLayer(
+                            urlTemplate: tileLayerUrl,
+                            userAgentPackageName: 'com.example.app',
+                          ),
+                          MarkerLayer(
+                            markers: [
+                              Marker(
+                                point: _selectedLocation,
+                                child: Icon(
+                                  Icons.circle,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )),
                 ),
                 const Center(
                   child: Icon(
@@ -233,7 +266,8 @@ class _LocationSelectorMapState extends State<LocationSelectorMap> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          widget.onLocationSelected(_selectedLocation);
+                          widget.onLocationSelected(_animatedMapController
+                              .mapController.camera.center);
                           Navigator.of(context).pop();
                         },
                         child: Text('Select'),

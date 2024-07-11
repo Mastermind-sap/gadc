@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/location/calculateDistance.dart';
+import 'package:gadc/functions/map/nearby_places.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
+import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -27,18 +32,165 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       ValueNotifier<LatLng>(const LatLng(21, 78));
   ValueNotifier<LatLng> mapCenterValueNotifier =
       ValueNotifier<LatLng>(LatLng(0, 0));
+  List<Marker> _markers = [];
+  List<Map<String, dynamic>> nearByData = [];
+  UnityWidgetController? _unityWidgetController;
+
+  // // Callback that connects the created controller to the unity controller
+  // void onUnityCreated(controller) {
+  //   _unityWidgetController = controller;
+  // }
 
   @override
   void initState() {
     super.initState();
     startLocationUpdates();
     startListeningToMapCenterChanges();
+    fetchUserData();
   }
 
   @override
   void dispose() {
     _animatedMapController.dispose();
     super.dispose();
+  }
+
+  void fetchUserData() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('your_collection')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      List<Marker> markers = [];
+      for (var doc in querySnapshot.docs) {
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          // fill nearBy Data
+          if (calculateDistanceBetweenTwoPos(
+                  data['latitude'], data['longitude'], currLat, currLong) <=
+              10000) {
+            // adjust minimum location via this
+            nearByData.add(data);
+          }
+
+          // add all markers
+          markers.add(
+            Marker(
+              point: LatLng(data['latitude'], data['longitude']),
+              width: 40,
+              height: 40,
+              child: GestureDetector(
+                onTap: () {
+                  _showBottomSheetWithFetchedData(context, data);
+                },
+                child: Icon(
+                  Icons.location_pin,
+                  color: Colors.blue,
+                  size: 40,
+                ),
+              ),
+            ),
+          );
+        }
+      }
+
+      setState(() {
+        _markers = markers;
+      });
+    } catch (error) {
+      print("Error fetching user data: $error");
+      // showToast('Failed to fetch data: $error'); // Uncomment if you have showToast function
+    }
+  }
+
+  void _showBottomSheetWithFetchedData(
+      BuildContext context, Map<String, dynamic> data) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        // Callback that connects the created controller to the unity controller
+        void onUnityCreated(controller) {
+          _unityWidgetController = controller;
+
+          _unityWidgetController!.postMessage(
+            'UnityMessageHandler', // The GameObject name in Unity
+            'OnUnityMessage', // The method name in UnityMessageHandler
+            data['unityData'], // The message to send
+          );
+        }
+
+        return UnityWidget(
+          onUnityCreated: onUnityCreated,
+        );
+        // return SingleChildScrollView(
+        //   child: Container(
+        //     padding: EdgeInsets.all(16.0),
+        //     child: Column(
+        //       mainAxisSize: MainAxisSize.min,
+        //       children: <Widget>[
+        //         UnityWidget(
+        //           onUnityCreated: onUnityCreated,
+        //         ),
+        //         const Text(
+        //           'Marker Information',
+        //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        //         ),
+        //         const SizedBox(height: 10),
+        //         Text('Unity Data: ${data['unityData']}'),
+        //         Text('Latitude: ${data['latitude']}'),
+        //         Text('Longitude: ${data['longitude']}'),
+        //         Text('Timestamp: ${data['timestamp']}'),
+        //         data['imageUrl'] != null
+        //             ? Image.network(data['imageUrl'])
+        //             : Container(),
+        //       ],
+        //     ),
+        //   ),
+        // );
+      },
+    );
+  }
+
+  void _showBottomSheetWithNearByData(
+      BuildContext context, List<Map<String, dynamic>> data) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  'Marker Information',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                ...data.map((entry) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('UID: ${entry['uid']}'),
+                      Text('Unity Data: ${entry['unityData']}'),
+                      Text('Latitude: ${entry['latitude']}'),
+                      Text('Longitude: ${entry['longitude']}'),
+                      Text('Timestamp: ${entry['timestamp']}'),
+                      entry['imageUrl'] != null
+                          ? Image.network(entry['imageUrl'])
+                          : Container(),
+                      const SizedBox(height: 10),
+                    ],
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> startLocationUpdates() async {
@@ -96,7 +248,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
 // Example of using a listener or a periodic check to detect changes
   void startListeningToMapCenterChanges() {
-    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+    Timer.periodic(const Duration(milliseconds: 1), (timer) {
       updateAnotherVariable();
     });
   }
@@ -142,16 +294,6 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   builder: (context, value, child) {
                     if (appFirstTimeLaunch) {
                       return CustomMap(
-                          myLat: currLat,
-                          myLong: currLong,
-                          centerLat: value.latitude,
-                          centerLong: value.longitude,
-                          mapController: _animatedMapController.mapController,
-                          updateMapCenter: _updateMapCenter,
-                          context: context,
-                          zoom: 4.5);
-                    }
-                    return CustomMap(
                         myLat: currLat,
                         myLong: currLong,
                         centerLat: value.latitude,
@@ -159,7 +301,21 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                         mapController: _animatedMapController.mapController,
                         updateMapCenter: _updateMapCenter,
                         context: context,
-                        zoom: 17.5);
+                        zoom: 4.5,
+                        markers: _markers,
+                      );
+                    }
+                    return CustomMap(
+                      myLat: currLat,
+                      myLong: currLong,
+                      centerLat: value.latitude,
+                      centerLong: value.longitude,
+                      mapController: _animatedMapController.mapController,
+                      updateMapCenter: _updateMapCenter,
+                      context: context,
+                      zoom: 17.5,
+                      markers: _markers,
+                    );
                   },
                 );
               },
@@ -235,10 +391,16 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                             size: 36,
                           ),
                         ),
-                        SizedBox(height: 24),
-                        Icon(
-                          Icons.view_in_ar_rounded,
-                          size: 36,
+                        const SizedBox(height: 24),
+                        GestureDetector(
+                          onTap: () {
+                            print(nearByData);
+                            _showBottomSheetWithNearByData(context, nearByData);
+                          },
+                          child: const Icon(
+                            Icons.view_in_ar_rounded,
+                            size: 36,
+                          ),
                         ),
                       ],
                     ),
