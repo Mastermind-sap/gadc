@@ -1,13 +1,18 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/gemini/categories/fetchTourismPlaces.dart';
 import 'package:gadc/functions/gemini/categories/imageSearch.dart';
+import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:gadc/functions/location/locate_me.dart';
+import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/widgets/custom_category_card/custom_category_card.dart';
 import 'package:gadc/widgets/custom_grid_card/custom_grid_card.dart';
+import 'package:gadc/widgets/location_fetch_bottom_sheet/multiple_fetch_bottom_sheet.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -15,7 +20,8 @@ class NearbyMainPage extends StatefulWidget {
   final double? latitude;
   final double? longitude;
 
-  const NearbyMainPage({super.key, this.latitude, this.longitude});
+  const NearbyMainPage({Key? key, this.latitude, this.longitude})
+      : super(key: key);
 
   @override
   State<NearbyMainPage> createState() => _NearbyMainPageState();
@@ -31,10 +37,45 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
     {'icon': Icons.place_rounded, 'label': 'Historical'},
   ];
 
+  List<Map<String, dynamic>> nearData = [];
+  List<Map<String, dynamic>> allData = [];
+
+  void getNearbyData(LatLng center) {
+    nearData = [];
+    for (var data in allData) {
+      double distance = calculateDistance(
+          LatLng(data['latitude'], data['longitude']), center);
+      if (distance <= 100) {
+        nearData.add(data);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     loadCategories();
+    fetchUserData();
+  }
+
+  void fetchUserData() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('your_collection')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          allData.add(data);
+        }
+      }
+    } catch (error) {
+      print("Error fetching user data: $error");
+      // showToast('Failed to fetch data: $error'); // Uncomment if you have showToast function
+    }
   }
 
   Future<void> loadCategories() async {
@@ -163,6 +204,32 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
     });
   }
 
+  void _showBottomSheetWithNearByData(
+      BuildContext context, List<Map<String, dynamic>> data) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return multipleLocationBottomSheet(context, data);
+      },
+    );
+  }
+
+  Future<void> saveFavorite(Map<String, dynamic> place) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> favorites = prefs.getStringList('favorites') ?? [];
+
+    // Convert place to a JSON string and add to the favorites list
+    String placeJson = json.encode(place);
+    if (!favorites.contains(placeJson)) {
+      favorites.add(placeJson);
+    }
+
+    // Save the updated favorites list to SharedPreferences
+    await prefs.setStringList('favorites', favorites);
+
+    showToast('Added to favorites!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -236,7 +303,6 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
                           itemBuilder: (context, index) {
                             final place = places[index];
 
-                            // Assuming getWikipediaImageUrls returns a Future<List<String>>
                             Future<List<String>> imageUrlsFuture =
                                 getImageUrls(place['name']);
 
@@ -245,12 +311,10 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  // Replace CircularProgressIndicator with Shimmer effect
                                   return Shimmer.fromColors(
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
                                     child: GridCard(
-                                      // Adjust the size and layout as needed
                                       title: '',
                                       location: '',
                                       imageUrls: [],
@@ -281,38 +345,58 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
                                   );
                                 }
 
-                                final imageUrls = snapshot.data!;
+                                final imageUrls = snapshot.data ?? [];
 
                                 return Stack(
                                   children: [
-                                    GridCard(
-                                      title: place['name'],
-                                      location:
-                                          '${place['latitude']}, ${place['longitude']}',
-                                      imageUrls: imageUrls,
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: imageProvider,
+                                    GestureDetector(
+                                      onTap: () {
+                                        getNearbyData(LatLng(place['latitude'],
+                                            place['longitude']));
+                                        _showBottomSheetWithNearByData(
+                                            context, nearData);
+                                      },
+                                      child: GridCard(
+                                        title: place['name'],
+                                        location:
+                                            '${place['latitude']}, ${place['longitude']}',
+                                        imageUrls: imageUrls,
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        placeholder: (context, url) =>
+                                            Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Center(
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                'https://picsum.photos/seed/${place['name']}/600',
                                             fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
-                                      placeholder: (context, url) => Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Center(
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              'https://picsum.photos/seed/${place['name']}/600',
-                                          fit: BoxFit.cover,
-                                        ),
+                                    ),
+                                    Positioned(
+                                      top: 16,
+                                      right: 16,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          saveFavorite(place);
+                                        },
+                                        child: Icon(Icons.bookmark_border),
                                       ),
                                     ),
                                   ],

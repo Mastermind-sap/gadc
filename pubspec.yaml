@@ -102,6 +102,8 @@ flutter:
     - assets/loading_gradient.json
     - assets/ai_lottie.json
     - assets/user_loc.png
+    - assets/question_lottie.json
+    - assets/default_scenery_picture.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

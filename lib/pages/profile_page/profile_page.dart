@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
@@ -50,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'longitude': doc['longitude'],
               'timestamp': doc['timestamp'],
               'imageUrl': doc['imageUrl'],
+              'name': doc['name'],
             };
             fetchedData.add(data);
           }
@@ -170,8 +172,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       shape: BoxShape.circle,
                     ),
                     child: (userImageUrl != "None")
-                        ? Image.network(
-                            userImageUrl,
+                        ? CachedNetworkImage(
+                            imageUrl: userImageUrl,
                             fit: BoxFit.cover,
                           )
                         : Image.asset(
