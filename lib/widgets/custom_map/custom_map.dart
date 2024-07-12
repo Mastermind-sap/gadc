@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -71,93 +70,92 @@ class _CustomMapState extends State<CustomMap> {
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-    return FutureBuilder(
-      future: getCacheDirectory(),
-      builder: (context, snapshot) {
-        return FlutterMap(
-          mapController: widget.mapController,
-          options: MapOptions(
-            cameraConstraint: CameraConstraint.contain(
-              bounds: LatLngBounds(
-                const LatLng(-90, -180), // Southwest corner of the bounds
-                const LatLng(90, 180), // Northeast corner of the bounds
-              ),
-            ),
-            keepAlive:
-                true, // so that it does not reset to initial position on changing pages
-            minZoom: 3.0,
-            maxZoom: 18.0,
-            enableScrollWheel: true, // Enable scroll wheel zoom
-            interactiveFlags: InteractiveFlag.pinchZoom |
-                InteractiveFlag.drag |
-                InteractiveFlag.doubleTapZoom |
-                InteractiveFlag.flingAnimation, // Use specific flags
-            initialCenter: LatLng(widget.myLat, widget.myLong),
-            initialZoom: widget.zoom,
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            onMapReady: () {
-              // Get the initial map center when the map is ready
-              widget.updateMapCenter();
-            },
-            onPositionChanged: (MapPosition position, bool hasGesture) {
-              // Update map center whenever the position changes
-              widget.updateMapCenter();
-            },
-            onLongPress: (tapPosition, point) {
-              bottomModalOnMap(context);
-            },
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: tileLayerUrl,
-              subdomains: ['a', 'b', 'c'],
-              retinaMode: true,
-              userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-              tileProvider: CachedTileProvider(
-                // maxStale keeps the tile cached for the given Duration and
-                // tries to revalidate the next time it gets requested
-                maxStale: const Duration(days: 30),
-                store: HiveCacheStore(
-                  snapshot.data,
-                  hiveBoxName: 'HiveCacheStore',
+    return Stack(
+      children: [
+        FutureBuilder(
+          future: getCacheDirectory(),
+          builder: (context, snapshot) {
+            return FlutterMap(
+              mapController: widget.mapController,
+              options: MapOptions(
+                cameraConstraint: CameraConstraint.contain(
+                  bounds: LatLngBounds(
+                    const LatLng(-90, -180), // Southwest corner of the bounds
+                    const LatLng(90, 180), // Northeast corner of the bounds
+                  ),
                 ),
+                keepAlive:
+                    true, // so that it does not reset to initial position on changing pages
+                minZoom: 3.0,
+                maxZoom: 18.0,
+                enableScrollWheel: true, // Enable scroll wheel zoom
+                interactiveFlags: InteractiveFlag.pinchZoom |
+                    InteractiveFlag.drag |
+                    InteractiveFlag.doubleTapZoom |
+                    InteractiveFlag.flingAnimation, // Use specific flags
+                initialCenter: LatLng(widget.myLat, widget.myLong),
+                initialZoom: widget.zoom,
+                backgroundColor: isDarkMode ? Colors.black : Colors.white,
+                onMapReady: () {
+                  // Get the initial map center when the map is ready
+                  widget.updateMapCenter();
+                },
+                onPositionChanged: (MapPosition position, bool hasGesture) {
+                  // Update map center whenever the position changes
+                  widget.updateMapCenter();
+                },
+                onLongPress: (tapPosition, point) {
+                  bottomModalOnMap(context);
+                },
               ),
-            ),
-            MarkerLayer(markers: widget.markers),
-            MarkerLayer(
-              markers: [
-                // My Location
-                Marker(
-                  point: LatLng(widget.myLat, widget.myLong),
-                  width: 20,
-                  height: 20,
-                  child: Icon(Icons.location_pin),
-                ),
-                // Other Location Marker
-                if (calculateDistance(LatLng(widget.myLat, widget.myLong),
-                        LatLng(widget.centerLat, widget.centerLong)) >
-                    50.0) // Distance threshold in meters
-                  Marker(
-                    point: LatLng(widget.centerLat, widget.centerLong),
-                    width: 20,
-                    height: 20,
-                    child: AnimatedBuilder(
-                      animation: _currentRotation,
-                      builder: (context, child) {
-                        return Transform.rotate(
-                          angle: _currentRotation.value *
-                              3.1415926535 /
-                              180, // Convert degrees to radians
-                          child: Image.asset("assets/current_pointer.png"),
-                        );
-                      },
+              children: [
+                TileLayer(
+                  urlTemplate: tileLayerUrl,
+                  subdomains: ['a', 'b', 'c'],
+                  retinaMode: true,
+                  userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                  tileProvider: CachedTileProvider(
+                    // maxStale keeps the tile cached for the given Duration and
+                    // tries to revalidate the next time it gets requested
+                    maxStale: const Duration(days: 30),
+                    store: HiveCacheStore(
+                      snapshot.data,
+                      hiveBoxName: 'HiveCacheStore',
                     ),
                   ),
+                ),
+                MarkerLayer(markers: widget.markers),
+                MarkerLayer(
+                  markers: [
+                    // My Location
+                    Marker(
+                      point: LatLng(widget.myLat, widget.myLong),
+                      width: 20,
+                      height: 20,
+                      child: const Opacity(
+                        opacity: 0.5,
+                        child: Icon(
+                          Icons.location_history,
+                          // color: Colors.blueAccent,
+                          size: 36,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            ),
-          ],
-        );
-      },
+            );
+          },
+        ),
+        if (calculateDistance(LatLng(widget.myLat, widget.myLong),
+                LatLng(widget.centerLat, widget.centerLong)) >
+            10.0)
+          const Center(
+              child: Icon(
+            Icons.location_on,
+            size: 20,
+          ))
+      ],
     );
   }
 }

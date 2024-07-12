@@ -5,11 +5,11 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/location/calculateDistance.dart';
-import 'package:gadc/functions/map/nearby_places.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
-import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
+import 'package:gadc/widgets/location_fetch_bottom_sheet/multiple_fetch_bottom_sheet.dart';
+import 'package:gadc/widgets/location_fetch_bottom_sheet/single_location_bottom_sheet.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
@@ -33,8 +33,10 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   ValueNotifier<LatLng> mapCenterValueNotifier =
       ValueNotifier<LatLng>(LatLng(0, 0));
   List<Marker> _markers = [];
-  List<Map<String, dynamic>> nearByData = [];
+  List<Map<String, dynamic>> allData = [];
+  List<Map<String, dynamic>> nearByToCenterData = [];
   UnityWidgetController? _unityWidgetController;
+  LatLng center = LatLng(21, 78);
 
   // // Callback that connects the created controller to the unity controller
   // void onUnityCreated(controller) {
@@ -67,13 +69,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         if (doc.exists) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-          // fill nearBy Data
-          if (calculateDistanceBetweenTwoPos(
-                  data['latitude'], data['longitude'], currLat, currLong) <=
-              10000) {
-            // adjust minimum location via this
-            nearByData.add(data);
-          }
+          allData.add(data);
 
           // add all markers
           markers.add(
@@ -85,7 +81,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 onTap: () {
                   _showBottomSheetWithFetchedData(context, data);
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.location_pin,
                   color: Colors.blue,
                   size: 40,
@@ -105,50 +101,26 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     }
   }
 
+  void getNearbyData() {
+    nearByToCenterData = [];
+    for (var data in allData) {
+      double distance = calculateDistance(
+          LatLng(data['latitude'], data['longitude']), center);
+      if (distance <= 1000) {
+        nearByToCenterData.add(data);
+      }
+    }
+  }
+
   void _showBottomSheetWithFetchedData(
       BuildContext context, Map<String, dynamic> data) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        // Callback that connects the created controller to the unity controller
-        void onUnityCreated(controller) {
-          _unityWidgetController = controller;
-
-          _unityWidgetController!.postMessage(
-            'UnityMessageHandler', // The GameObject name in Unity
-            'OnUnityMessage', // The method name in UnityMessageHandler
-            data['unityData'], // The message to send
-          );
-        }
-
-        return UnityWidget(
-          onUnityCreated: onUnityCreated,
-        );
-        // return SingleChildScrollView(
-        //   child: Container(
-        //     padding: EdgeInsets.all(16.0),
-        //     child: Column(
-        //       mainAxisSize: MainAxisSize.min,
-        //       children: <Widget>[
-        //         UnityWidget(
-        //           onUnityCreated: onUnityCreated,
-        //         ),
-        //         const Text(
-        //           'Marker Information',
-        //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        //         ),
-        //         const SizedBox(height: 10),
-        //         Text('Unity Data: ${data['unityData']}'),
-        //         Text('Latitude: ${data['latitude']}'),
-        //         Text('Longitude: ${data['longitude']}'),
-        //         Text('Timestamp: ${data['timestamp']}'),
-        //         data['imageUrl'] != null
-        //             ? Image.network(data['imageUrl'])
-        //             : Container(),
-        //       ],
-        //     ),
-        //   ),
-        // );
+        return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: singleLocationBottomSheet(
+                context, data, _unityWidgetController));
       },
     );
   }
@@ -158,37 +130,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Marker Information',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                ...data.map((entry) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('UID: ${entry['uid']}'),
-                      Text('Unity Data: ${entry['unityData']}'),
-                      Text('Latitude: ${entry['latitude']}'),
-                      Text('Longitude: ${entry['longitude']}'),
-                      Text('Timestamp: ${entry['timestamp']}'),
-                      entry['imageUrl'] != null
-                          ? Image.network(entry['imageUrl'])
-                          : Container(),
-                      const SizedBox(height: 10),
-                    ],
-                  );
-                }).toList(),
-              ],
-            ),
-          ),
-        );
+        return multipleLocationBottomSheet(context, data);
       },
     );
   }
@@ -243,12 +185,13 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
     // Check if the center has changed
     if (mapCenterValueNotifier.value != newCenter) {
       mapCenterValueNotifier.value = newCenter;
+      center = newCenter;
     }
   }
 
 // Example of using a listener or a periodic check to detect changes
   void startListeningToMapCenterChanges() {
-    Timer.periodic(const Duration(milliseconds: 1), (timer) {
+    Timer.periodic(const Duration(milliseconds: 100), (timer) {
       updateAnotherVariable();
     });
   }
@@ -366,7 +309,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                                     LatLng(currLat, currLong),
                                     LatLng(_updateMapCenter().latitude,
                                         _updateMapCenter().longitude)) <
-                                50) {
+                                60000) {
+                              // to get new data get out of the town
                               Navigator.of(context).push(
                                 fromBottomRoute(
                                   const NavigationPage(
@@ -394,8 +338,9 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                         const SizedBox(height: 24),
                         GestureDetector(
                           onTap: () {
-                            print(nearByData);
-                            _showBottomSheetWithNearByData(context, nearByData);
+                            getNearbyData();
+                            _showBottomSheetWithNearByData(
+                                context, nearByToCenterData);
                           },
                           child: const Icon(
                             Icons.view_in_ar_rounded,

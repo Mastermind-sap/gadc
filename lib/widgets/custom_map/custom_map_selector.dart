@@ -10,10 +10,14 @@ import 'package:image_picker/image_picker.dart';
 
 class LocationSelectorMap extends StatefulWidget {
   final void Function(LatLng) onLocationSelected;
-  final void Function(File?) onImageSelected; // New callback
+  final void Function(File?) onImageSelected; // Callback for image selection
+  final void Function(String) onTextSubmitted; // Callback for text input
 
-  LocationSelectorMap(
-      {required this.onLocationSelected, required this.onImageSelected});
+  const LocationSelectorMap(
+      {super.key,
+      required this.onLocationSelected,
+      required this.onImageSelected,
+      required this.onTextSubmitted});
 
   @override
   _LocationSelectorMapState createState() => _LocationSelectorMapState();
@@ -23,6 +27,7 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
     with TickerProviderStateMixin {
   late LatLng _selectedLocation;
   File? _imageFile;
+  String _locationName = '';
   late final _animatedMapController = AnimatedMapController(vsync: this);
   ValueNotifier<LatLng> mapCenterValueNotifier =
       ValueNotifier<LatLng>(const LatLng(0, 0));
@@ -39,19 +44,6 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
     super.dispose();
   }
 
-  // LatLng _getMapCenter() {
-  //   return _animatedMapController.mapController.camera.center;
-  // }
-
-  // void updateMapCenter() {
-  //   LatLng newCenter = _getMapCenter();
-
-  //   // Check if the center has changed
-  //   if (mapCenterValueNotifier.value != newCenter) {
-  //     mapCenterValueNotifier.value = newCenter;
-  //   }
-  // }
-
   void _getCurrentLocation() async {
     try {
       List<String> position =
@@ -65,12 +57,6 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
     }
   }
 
-  void _updateSelectedLocation(LatLng location) {
-    setState(() {
-      _selectedLocation = location;
-    });
-  }
-
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -80,7 +66,6 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
         _imageFile = File(pickedFile.path);
         widget.onImageSelected(_imageFile); // Call the callback
       } else {
-        print('No image selected.');
         widget.onImageSelected(null); // Notify null if no image selected
       }
     });
@@ -94,27 +79,48 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     return Padding(
-      padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
+      padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Padding(
-            padding: EdgeInsets.all(0),
+            padding: EdgeInsets.all(16),
             child: Text(
-              "IMAGE",
-              textAlign: TextAlign.center,
+              "DETAILS",
               style: TextStyle(fontSize: 24),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+            child: TextField(
+              onChanged: (value) {
+                _locationName = value;
+              },
+              decoration: const InputDecoration(
+                labelText: '   Location Name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                  borderSide: BorderSide(color: Colors.white10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                  borderSide: BorderSide(color: Colors.white30),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
             child: Container(
               width: double.infinity,
               height: 150,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(24),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(24),
                 ),
                 border: Border.all(
                   color: Colors.white10,
@@ -126,8 +132,8 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                 children: [
                   if (_imageFile != null) ...[
                     ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(24),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(24),
                       ),
                       child: Image.file(
                         _imageFile!,
@@ -143,7 +149,7 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                             _imageFile = null;
                           });
                         },
-                        child: CircleAvatar(
+                        child: const CircleAvatar(
                           backgroundColor: Colors.red,
                           radius: 12,
                           child: Icon(
@@ -163,14 +169,20 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                             onTap: () {
                               _pickImage(ImageSource.camera);
                             },
-                            child: Icon(Icons.camera_alt_rounded),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              size: 32,
+                            ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 32),
                           GestureDetector(
                             onTap: () {
                               _pickImage(ImageSource.gallery);
                             },
-                            child: Icon(Icons.image),
+                            child: const Icon(
+                              Icons.image,
+                              size: 32,
+                            ),
                           ),
                         ],
                       ),
@@ -180,20 +192,13 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(0),
-            child: Text(
-              "LOCATION",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24),
-            ),
-          ),
           Expanded(
             child: Stack(
               children: [
                 ClipRRect(
-                  borderRadius:
-                      BorderRadius.only(topRight: Radius.circular(24)),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(24),
+                  ),
                   child: Container(
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -201,7 +206,7 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -210,8 +215,8 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                         options: MapOptions(
                           cameraConstraint: CameraConstraint.contain(
                             bounds: LatLngBounds(
-                              LatLng(-90, -180),
-                              LatLng(90, 180),
+                              const LatLng(-90, -180),
+                              const LatLng(90, 180),
                             ),
                           ),
                           keepAlive: true,
@@ -234,9 +239,10 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                             markers: [
                               Marker(
                                 point: _selectedLocation,
-                                child: Icon(
+                                child: const Icon(
                                   Icons.circle,
                                   color: Colors.blue,
+                                  size: 10,
                                 ),
                               ),
                             ],
@@ -259,18 +265,20 @@ class _LocationSelectorMapState extends State<LocationSelectorMap>
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 8,
                       ),
                       ElevatedButton(
                         onPressed: () {
                           widget.onLocationSelected(_animatedMapController
                               .mapController.camera.center);
+                          widget.onTextSubmitted(
+                              _locationName); // Call the callback
                           Navigator.of(context).pop();
                         },
-                        child: Text('Select'),
+                        child: const Text('Select'),
                       ),
                     ],
                   ),

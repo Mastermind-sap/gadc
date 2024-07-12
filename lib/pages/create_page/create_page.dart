@@ -21,6 +21,7 @@ class CreatePage extends StatefulWidget {
 class _CreatePageState extends State<CreatePage> {
   UnityWidgetController? _unityWidgetController;
   File? yourImageFile; // Variable to store selected image file
+  String? name;
 
   // Callback that connects the created controller to the unity controller
   void onUnityCreated(controller) {
@@ -43,10 +44,13 @@ class _CreatePageState extends State<CreatePage> {
       context: context,
       isScrollControlled: true, // Enable to make the sheet full height
       builder: (context) => Padding(
-        padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         child: FractionallySizedBox(
           heightFactor: 0.9, // 90% of screen height
           child: LocationSelectorMap(
+            onTextSubmitted: (String n) {
+              name = n;
+            },
             onLocationSelected: (LatLng location) async {
               User? user = FirebaseAuth.instance.currentUser;
 
@@ -60,6 +64,7 @@ class _CreatePageState extends State<CreatePage> {
                     'unityData': message,
                     'latitude': location.latitude,
                     'longitude': location.longitude,
+                    'name': name,
                     'imageUrl': imageUrl,
                     'uid': user.uid,
                     'timestamp': FieldValue.serverTimestamp(),
