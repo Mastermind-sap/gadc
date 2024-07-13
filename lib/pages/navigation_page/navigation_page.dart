@@ -85,7 +85,7 @@ class _NavigationPageState extends State<NavigationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: getDrawer(),
+      // drawer: getDrawer(),
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
         selected: currentBottomIndex,

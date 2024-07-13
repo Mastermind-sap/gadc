@@ -1,15 +1,17 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:latlong2/latlong.dart';
+
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
+import 'package:gadc/provider/DataProvider.dart';
 import 'package:gadc/widgets/custom_map/custom_map_selector.dart';
-import 'package:latlong2/latlong.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({Key? key}) : super(key: key);
@@ -37,7 +39,7 @@ class _CreatePageState extends State<CreatePage> {
   // Callback to handle messages from Unity
   void onUnityMessageHandler(message) {
     // Display received data in a toast
-    // showToast(message);
+    showToast(message);
 
     // Show bottom sheet to select location on map
     showModalBottomSheet(
@@ -72,8 +74,11 @@ class _CreatePageState extends State<CreatePage> {
 
                   // Save data to Firestore
                   await saveDataToFirestore(dataToSave);
-
                   showToast('Data saved to Firestore');
+                  Provider.of<SharedDataProvider>(context, listen: false)
+                      .addData(dataToSave);
+                  showToast('Data Updated');
+
                   Navigator.pop(context); // Close bottom sheet
                   Navigator.of(context).push(
                     fromBottomRoute(const NavigationPage(
@@ -81,7 +86,8 @@ class _CreatePageState extends State<CreatePage> {
                     )),
                   );
                 } catch (error) {
-                  // showToast('Failed to perform operation: $error');
+                  showToast('Failed to perform operation: $error');
+                  print('Failed to perform operation: $error');
                 }
               } else {
                 showToast("Sign In first or select an image");
@@ -89,7 +95,9 @@ class _CreatePageState extends State<CreatePage> {
             },
             onImageSelected: (File? imageFile) {
               // Handle image selection here
-              yourImageFile = imageFile!;
+              setState(() {
+                yourImageFile = imageFile!;
+              });
             },
           ),
         ),

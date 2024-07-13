@@ -1,12 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:gadc/provider/DataProvider.dart';
+import 'package:provider/provider.dart';
 
 import 'pages/pages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const GADC());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SharedDataProvider()),
+      ],
+      child: const GADC(),
+    ),
+  );
 }
 
 class GADC extends StatefulWidget {

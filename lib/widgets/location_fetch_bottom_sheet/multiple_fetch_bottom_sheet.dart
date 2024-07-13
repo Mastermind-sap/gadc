@@ -11,7 +11,10 @@ Widget multipleLocationBottomSheet(
     return Stack(
       children: [
         Center(
-          child: LottieBuilder.asset("assets/question_lottie.json"),
+          child: LottieBuilder.asset(
+            "assets/question_lottie.json",
+            repeat: false,
+          ),
         ),
         Positioned(
           bottom: 32,
@@ -38,12 +41,13 @@ Widget multipleLocationBottomSheet(
           style: TextStyle(fontSize: 32),
         ),
       ),
-      Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: data.map((entry) {
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
+          child: ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final entry = data[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Stack(
@@ -78,7 +82,6 @@ Widget multipleLocationBottomSheet(
                           Align(
                             alignment: AlignmentDirectional(1, 1),
                             child: Text(
-                              // entry['unityData'] ?? 'Unknown Location',
                               entry['name'],
                               style: const TextStyle(
                                 fontSize: 36,
@@ -107,15 +110,13 @@ Widget multipleLocationBottomSheet(
                               ),
                             ],
                           ),
-                          // Text('UID: ${entry['uid']}'),
-                          // Text('Timestamp: ${entry['timestamp']}'),
                         ],
                       ),
                     ),
                   ],
                 ),
               );
-            }).toList(),
+            },
           ),
         ),
       ),

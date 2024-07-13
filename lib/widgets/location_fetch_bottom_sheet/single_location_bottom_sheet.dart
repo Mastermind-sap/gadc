@@ -33,64 +33,54 @@ Widget singleLocationBottomSheet(BuildContext context,
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: data['imageUrl'],
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
+                    child: Opacity(
+                      opacity: 0.6,
+                      child: CachedNetworkImage(
+                        imageUrl: data['imageUrl'],
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   Align(
                     alignment: AlignmentDirectional(1, -1),
-                    child: Card(
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(24),
-                          bottomRight: Radius.circular(0),
-                          topLeft: Radius.circular(0),
-                          topRight: Radius.circular(24),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${data['latitude'].toStringAsFixed(4)}, ${data['longitude'].toStringAsFixed(4)}',
-                            ),
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
-                              child: Text(
-                                data['name'],
-                                style: TextStyle(
-                                  fontSize: 36,
-                                  letterSpacing: 0,
-                                ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${data['latitude'].toStringAsFixed(4)}, ${data['longitude'].toStringAsFixed(4)}',
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
+                            child: Text(
+                              data['name'],
+                              style: TextStyle(
+                                fontSize: 36,
+                                letterSpacing: 0,
                               ),
                             ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      fromBottomRoute(PlayerPage(data: data)),
-                                    );
-                                  },
-                                  child: const Icon(
-                                    Icons.view_in_ar_rounded,
-                                    size: 36,
-                                  ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    fromBottomRoute(PlayerPage(data: data)),
+                                  );
+                                },
+                                child: const Icon(
+                                  Icons.view_in_ar_rounded,
+                                  size: 36,
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),

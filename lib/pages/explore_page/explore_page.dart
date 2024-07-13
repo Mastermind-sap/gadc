@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/location/geocoding.dart';
@@ -75,15 +76,16 @@ class _ExplorePageState extends State<ExplorePage> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                widget.drawerKey();
+                                // widget.drawerKey();
+                                // Needed to be implemented!
                               },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Icon(
-                                  Icons.notes,
-                                  size: 30,
-                                ),
-                              ),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: SvgPicture.asset(
+                                    'assets/google-gemini-icon.svg',
+                                    height: 30,
+                                    width: 30,
+                                  )),
                             ),
                             const SizedBox(width: 4),
                             Expanded(
