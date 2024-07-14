@@ -5,12 +5,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
+import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
 import 'package:gadc/functions/location/geocoding.dart';
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_chat_bot.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -33,6 +36,7 @@ class _ExplorePageState extends State<ExplorePage> {
   List<bool> isSelected = [true, false];
 
   final GeocodingService _geocodingService = GeocodingService();
+  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -74,7 +78,7 @@ class _ExplorePageState extends State<ExplorePage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return CustomChatBot();
+        return const CustomChatBot();
       },
     ).then((value) {
       // This code executes after the bottom sheet is closed
@@ -85,7 +89,7 @@ class _ExplorePageState extends State<ExplorePage> {
     });
   }
 
-  SpeechToText _speechToText = SpeechToText();
+  final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
 
@@ -121,7 +125,34 @@ class _ExplorePageState extends State<ExplorePage> {
     });
   }
 
+  Future<String> _getGenerativeAIResponse(String userInput) async {
+    final model = GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: GEMINI_API_KEY,
+    );
+
+    final content = [Content.text(userInput)];
+    final response = await model.generateContent(content);
+
+    return response.text!;
+  }
+
+  Future<void> _speakAI(String text) async {
+    await _flutterTts.setLanguage('en-US');
+    await _flutterTts.setPitch(1);
+    await _flutterTts.setSpeechRate(0.6);
+
+    String toSpeak = await _getGenerativeAIResponse(text);
+
+    await _flutterTts.speak(toSpeak);
+  }
+
+  Future<void> _pauseAiVoice() async {
+    await _flutterTts.pause();
+  }
+
   void _showSpeechToTextModalSheet() {
+    bool ai_thinking = false;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -129,8 +160,13 @@ class _ExplorePageState extends State<ExplorePage> {
           stream: _speechStreamController.stream,
           initialData: '',
           builder: (context, snapshot) {
+            if (_speechToText.isListening == false && _lastWords != '') {
+              // _getGenerativeAIResponse(_lastWords);
+              ai_thinking = true;
+              _speakAI(_lastWords);
+            }
             return Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
               child: Column(
                 children: [
                   _speechToText.isListening
@@ -144,6 +180,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         )
                       : GestureDetector(
                           onTap: () {
+                            ai_thinking = false;
                             _startListening();
                           },
                           child: LottieBuilder.asset(
@@ -164,6 +201,7 @@ class _ExplorePageState extends State<ExplorePage> {
                             : 'Speech not available',
                     style: TextStyle(fontSize: 24),
                   ),
+                  if (ai_thinking) LottieBuilder.asset("assets/ai_lottie.json")
                 ],
               ),
             );
@@ -173,6 +211,9 @@ class _ExplorePageState extends State<ExplorePage> {
     ).then((value) {
       // This code executes after the bottom sheet is closed
       setState(() {
+        _stopListening();
+        _pauseAiVoice();
+
         _lastWords = '';
         ai = false; // Set ai to false when the bottom sheet is closed
         isSelected = [true, false];
@@ -184,11 +225,12 @@ class _ExplorePageState extends State<ExplorePage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
+        _startListening();
+
         return StreamBuilder<String>(
           stream: _speechStreamController.stream,
           initialData: '',
           builder: (context, snapshot) {
-            _startListening();
             return Container(
               width: MediaQuery.of(context).size.width, // Take entire width
               padding: EdgeInsets.all(16.0),
@@ -205,8 +247,12 @@ class _ExplorePageState extends State<ExplorePage> {
                           onTap: () {
                             _startListening();
                           },
-                          child: Icon(Icons.mic_off)),
-                  SizedBox(height: 16.0),
+                          child: const Opacity(
+                            opacity: 0.3,
+                            child: Icon(Icons.mic),
+                          ),
+                        ),
+                  const SizedBox(height: 16.0),
                   Text(
                     _speechToText.isListening
                         ? '${snapshot.data}'
@@ -240,7 +286,13 @@ class _ExplorePageState extends State<ExplorePage> {
           },
         );
       },
-    );
+    ).then((value) {
+      // This code executes after the bottom sheet is closed
+      setState(() {
+        _stopListening();
+        _lastWords = '';
+      });
+    });
   }
 
   @override
