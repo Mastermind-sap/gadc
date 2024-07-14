@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
@@ -92,185 +94,206 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         top: true,
-        child: Column(
-          children: [
-            // Header section
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 26, 8, 8),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Card(
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    color: (Theme.of(context).brightness == Brightness.dark)
-                        ? const Color.fromARGB(255, 29, 36, 40)
-                        : Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.arrow_drop_down,
-                        size: 24,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Header section
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 26, 8, 8),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Card(
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      color: (Theme.of(context).brightness == Brightness.dark)
+                          ? const Color.fromARGB(255, 29, 36, 40)
+                          : Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.arrow_drop_down,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            // Welcome message and user details
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 8, 0),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  'Hello,',
-                  style: TextStyle(
-                    fontSize: 24,
+              // Welcome message and user details
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 8, 0),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    'Hello,',
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: (userName == "None")
-                        ? GestureDetector(
-                            onTap: handleLogin,
-                            child: const Text(
-                              '..LOG IN?',
-                              style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: (userName == "None")
+                          ? GestureDetector(
+                              onTap: handleLogin,
+                              child: const Text(
+                                '..LOG IN?',
+                                style: TextStyle(
+                                  fontFamily: 'Readex Pro',
+                                  fontSize: 36,
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              userName,
+                              style: const TextStyle(
                                 fontFamily: 'Readex Pro',
                                 fontSize: 36,
                                 letterSpacing: 0,
                               ),
+                              overflow: TextOverflow.visible,
                             ),
-                          )
-                        : Text(
-                            userName,
-                            style: const TextStyle(
-                              fontFamily: 'Readex Pro',
-                              fontSize: 36,
-                              letterSpacing: 0,
-                            ),
-                            overflow: TextOverflow.visible,
-                          ),
-                  ),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
                     ),
-                    child: (userImageUrl != "None")
-                        ? CachedNetworkImage(
-                            imageUrl: userImageUrl,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.asset(
-                            "assets/anonymous_profile.png",
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            const Divider(thickness: 1, indent: 16, endIndent: 16),
-            const Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 0, 0),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  'Contributions',
-                  style: TextStyle(
-                    fontSize: 24,
-                  ),
+                    Container(
+                      width: 120,
+                      height: 120,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: (userImageUrl != "None")
+                          ? CachedNetworkImage(
+                              imageUrl: userImageUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              "assets/anonymous_profile.png",
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            // List of contributions
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: SizedBox(
-                height: 150,
-                child: (imageUrls.isNotEmpty)
-                    ? ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: imageUrls.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _buildListItem(imageUrls[index]);
-                        },
-                      )
-                    : LottieBuilder.asset(
-                        "assets/empty_dark.json",
-                        repeat: true,
-                        frameRate: const FrameRate(120),
-                      ),
+              const SizedBox(
+                height: 8,
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).highlightColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
+              const Divider(thickness: 1, indent: 16, endIndent: 16),
+              Column(
+                children: [
+                  const Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 0, 0),
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        'Contributions',
+                        style: TextStyle(
+                          fontSize: 24,
+                        ),
+                      ),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Align(
-                              alignment: AlignmentDirectional.center,
-                              child: Text(
-                                'SETTINGS',
-                                style: TextStyle(
-                                  fontSize: 24,
+                  // List of contributions
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: SizedBox(
+                      height: 150,
+                      child: (imageUrls.isNotEmpty)
+                          ? ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: imageUrls.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return _buildListItem(imageUrls[index]);
+                              },
+                            )
+                          : LottieBuilder.asset(
+                              "assets/empty_dark.json",
+                              repeat: true,
+                              frameRate: const FrameRate(120),
+                            ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 32),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).highlightColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Align(
+                                alignment: AlignmentDirectional.center,
+                                child: Text(
+                                  'SETTINGS',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          _buildSettingsItem(context, 'Feedback'),
-                          _buildSettingsItem(context, 'Report Bug'),
-                          _buildSettingsItem(context, 'About'),
-                          _buildSettingsItem(
-                            context,
-                            'Log Out',
-                            trailing: GestureDetector(
-                              onTap: handleLogout,
-                              child: const Icon(
-                                Icons.logout_rounded,
-                                color: Color(0xFFFF5151),
-                              ),
+                            ListView(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              children: [
+                                _buildSettingsItem(context, 'Feedback'),
+                                _buildSettingsItem(context, 'Report Bug'),
+                                _buildSettingsItem(context, 'About'),
+                                (userName != "None")
+                                    ? _buildSettingsItem(
+                                        context,
+                                        'Log Out',
+                                        trailing: GestureDetector(
+                                          onTap: handleLogout,
+                                          child: const Icon(
+                                            Icons.logout_rounded,
+                                            color: Color(0xFFFF5151),
+                                          ),
+                                        ),
+                                      )
+                                    : _buildSettingsItem(
+                                        context,
+                                        'Log In',
+                                        trailing: GestureDetector(
+                                          onTap: handleLogin,
+                                          child: const Icon(
+                                            Icons.login,
+                                            color: Color.fromARGB(
+                                                255, 50, 255, 88),
+                                          ),
+                                        ),
+                                      )
+                              ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

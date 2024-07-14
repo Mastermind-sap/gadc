@@ -1,18 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
-import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
+import 'package:gadc/provider/SharedDataProvider.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:gadc/widgets/location_fetch_bottom_sheet/multiple_fetch_bottom_sheet.dart';
-import 'package:gadc/widgets/location_fetch_bottom_sheet/single_location_bottom_sheet.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
+
+import 'package:provider/provider.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -32,97 +31,27 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       ValueNotifier<LatLng>(const LatLng(21, 78));
   ValueNotifier<LatLng> mapCenterValueNotifier =
       ValueNotifier<LatLng>(LatLng(0, 0));
-  List<Marker> _markers = [];
-  List<Map<String, dynamic>> allData = [];
-  List<Map<String, dynamic>> nearByToCenterData = [];
-  UnityWidgetController? _unityWidgetController;
-  LatLng center = LatLng(21, 78);
 
-  // // Callback that connects the created controller to the unity controller
-  // void onUnityCreated(controller) {
-  //   _unityWidgetController = controller;
-  // }
+  LatLng center = LatLng(21, 78);
 
   @override
   void initState() {
     super.initState();
     startLocationUpdates();
     startListeningToMapCenterChanges();
-    fetchUserData();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        Provider.of<SharedDataProvider>(context, listen: false)
+            .fetchUserData(context);
+      },
+    );
   }
 
   @override
   void dispose() {
     _animatedMapController.dispose();
     super.dispose();
-  }
-
-  void fetchUserData() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('your_collection')
-          .orderBy('timestamp', descending: true)
-          .get();
-
-      List<Marker> markers = [];
-      for (var doc in querySnapshot.docs) {
-        if (doc.exists) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          allData.add(data);
-
-          // add all markers
-          markers.add(
-            Marker(
-              point: LatLng(data['latitude'], data['longitude']),
-              width: 40,
-              height: 40,
-              child: GestureDetector(
-                onTap: () {
-                  _showBottomSheetWithFetchedData(context, data);
-                },
-                child: const Icon(
-                  Icons.location_pin,
-                  color: Colors.blue,
-                  size: 40,
-                ),
-              ),
-            ),
-          );
-        }
-      }
-
-      setState(() {
-        _markers = markers;
-      });
-    } catch (error) {
-      print("Error fetching user data: $error");
-      // showToast('Failed to fetch data: $error'); // Uncomment if you have showToast function
-    }
-  }
-
-  void getNearbyData() {
-    nearByToCenterData = [];
-    for (var data in allData) {
-      double distance = calculateDistance(
-          LatLng(data['latitude'], data['longitude']), center);
-      if (distance <= 1000) {
-        nearByToCenterData.add(data);
-      }
-    }
-  }
-
-  void _showBottomSheetWithFetchedData(
-      BuildContext context, Map<String, dynamic> data) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: singleLocationBottomSheet(
-                context, data, _unityWidgetController));
-      },
-    );
   }
 
   void _showBottomSheetWithNearByData(
@@ -236,28 +165,36 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   valueListenable: mapCenterValueNotifier,
                   builder: (context, value, child) {
                     if (appFirstTimeLaunch) {
-                      return CustomMap(
-                        myLat: currLat,
-                        myLong: currLong,
-                        centerLat: value.latitude,
-                        centerLong: value.longitude,
-                        mapController: _animatedMapController.mapController,
-                        updateMapCenter: _updateMapCenter,
-                        context: context,
-                        zoom: 4.5,
-                        markers: _markers,
+                      return Consumer<SharedDataProvider>(
+                        builder: (context, markerValue, child) {
+                          return CustomMap(
+                            myLat: currLat,
+                            myLong: currLong,
+                            centerLat: value.latitude,
+                            centerLong: value.longitude,
+                            mapController: _animatedMapController.mapController,
+                            updateMapCenter: _updateMapCenter,
+                            context: context,
+                            zoom: 4.5,
+                            markers: markerValue.markers,
+                          );
+                        },
                       );
                     }
-                    return CustomMap(
-                      myLat: currLat,
-                      myLong: currLong,
-                      centerLat: value.latitude,
-                      centerLong: value.longitude,
-                      mapController: _animatedMapController.mapController,
-                      updateMapCenter: _updateMapCenter,
-                      context: context,
-                      zoom: 17.5,
-                      markers: _markers,
+                    return Consumer<SharedDataProvider>(
+                      builder: (context, markerValue, child) {
+                        return CustomMap(
+                          myLat: currLat,
+                          myLong: currLong,
+                          centerLat: value.latitude,
+                          centerLong: value.longitude,
+                          mapController: _animatedMapController.mapController,
+                          updateMapCenter: _updateMapCenter,
+                          context: context,
+                          zoom: 17.5,
+                          markers: markerValue.markers,
+                        );
+                      },
                     );
                   },
                 );
@@ -337,10 +274,24 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                         ),
                         const SizedBox(height: 24),
                         GestureDetector(
-                          onTap: () {
-                            getNearbyData();
-                            _showBottomSheetWithNearByData(
-                                context, nearByToCenterData);
+                          onTap: () async {
+                            // await Provider.of<SharedDataProvider>(context,
+                            //         listen: false)
+                            //     .getNearbyData();
+                            Provider.of<SharedDataProvider>(context,
+                                    listen: false)
+                                .getNearbyData(center);
+                            var nearByData = Provider.of<SharedDataProvider>(
+                                    context,
+                                    listen: false)
+                                .nearByToCenterData;
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return multipleLocationBottomSheet(
+                                    context, nearByData);
+                              },
+                            );
                           },
                           child: const Icon(
                             Icons.view_in_ar_rounded,

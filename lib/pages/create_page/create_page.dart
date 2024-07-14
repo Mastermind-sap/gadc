@@ -1,15 +1,17 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_map/custom_map_selector.dart';
-import 'package:latlong2/latlong.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({Key? key}) : super(key: key);
@@ -36,9 +38,6 @@ class _CreatePageState extends State<CreatePage> {
 
   // Callback to handle messages from Unity
   void onUnityMessageHandler(message) {
-    // Display received data in a toast
-    // showToast(message);
-
     // Show bottom sheet to select location on map
     showModalBottomSheet(
       context: context,
@@ -73,7 +72,18 @@ class _CreatePageState extends State<CreatePage> {
                   // Save data to Firestore
                   await saveDataToFirestore(dataToSave);
 
-                  showToast('Data saved to Firestore');
+                  // Save data to shared preferences
+                  await saveMarkerDataToPrefs({
+                    'unityData': message,
+                    'latitude': location.latitude,
+                    'longitude': location.longitude,
+                    'name': name,
+                    'imageUrl': imageUrl,
+                    'uid': user.uid,
+                  });
+
+                  showToast('Data saved to Firestore and local storage');
+
                   Navigator.pop(context); // Close bottom sheet
                   Navigator.of(context).push(
                     fromBottomRoute(const NavigationPage(
@@ -81,7 +91,8 @@ class _CreatePageState extends State<CreatePage> {
                     )),
                   );
                 } catch (error) {
-                  // showToast('Failed to perform operation: $error');
+                  showToast('Failed to perform operation: $error');
+                  print('Failed to perform operation: $error');
                 }
               } else {
                 showToast("Sign In first or select an image");
@@ -89,7 +100,9 @@ class _CreatePageState extends State<CreatePage> {
             },
             onImageSelected: (File? imageFile) {
               // Handle image selection here
-              yourImageFile = imageFile!;
+              setState(() {
+                yourImageFile = imageFile!;
+              });
             },
           ),
         ),
@@ -121,6 +134,25 @@ class _CreatePageState extends State<CreatePage> {
     } catch (error) {
       throw error;
     }
+  }
+
+  // Function to save marker data to shared preferences
+  Future<void> saveMarkerDataToPrefs(Map<String, dynamic> data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> markers = prefs.getStringList('markers') ?? [];
+
+    markers.add(jsonEncode(data));
+    await prefs.setStringList('markers', markers);
+  }
+
+  // Function to retrieve marker data from shared preferences
+  Future<List<Map<String, dynamic>>> getMarkerDataFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> markers = prefs.getStringList('markers') ?? [];
+
+    return markers
+        .map((marker) => jsonDecode(marker) as Map<String, dynamic>)
+        .toList();
   }
 
   @override
