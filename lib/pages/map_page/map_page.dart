@@ -4,7 +4,7 @@ import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:gadc/functions/shared_pref/past_location.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
-import 'package:gadc/provider/DataProvider.dart';
+import 'package:gadc/provider/SharedDataProvider.dart';
 import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:gadc/widgets/location_fetch_bottom_sheet/multiple_fetch_bottom_sheet.dart';
 import 'package:geolocator/geolocator.dart';
@@ -285,21 +285,13 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                                     context,
                                     listen: false)
                                 .nearByToCenterData;
-                            if (nearByData.isNotEmpty) {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return multipleLocationBottomSheet(
-                                      context, nearByData);
-                                },
-                              );
-                            } else {
-                              // Handle the case when there's no data available
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("No nearby data available")),
-                              );
-                            }
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return multipleLocationBottomSheet(
+                                    context, nearByData);
+                              },
+                            );
                           },
                           child: const Icon(
                             Icons.view_in_ar_rounded,

@@ -197,8 +197,9 @@ class _CustomMapState extends State<CustomMap> {
             10.0)
           const Center(
             child: Icon(
-              Icons.location_on,
-              size: 20,
+              Icons.circle,
+              // color: Color.fromARGB(130, 255, 64, 128),
+              size: 10,
             ),
           ),
       ],
