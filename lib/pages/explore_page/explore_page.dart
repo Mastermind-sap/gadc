@@ -7,10 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
+import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
 import 'package:gadc/functions/location/geocoding.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_chat_bot.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -74,7 +77,7 @@ class _ExplorePageState extends State<ExplorePage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return CustomChatBot();
+        return const CustomChatBot();
       },
     ).then((value) {
       // This code executes after the bottom sheet is closed
@@ -85,7 +88,7 @@ class _ExplorePageState extends State<ExplorePage> {
     });
   }
 
-  SpeechToText _speechToText = SpeechToText();
+  final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
 
@@ -121,6 +124,18 @@ class _ExplorePageState extends State<ExplorePage> {
     });
   }
 
+  Future<String> _getGenerativeAIResponse(String userInput) async {
+    final model = GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: GEMINI_API_KEY,
+    );
+
+    final content = [Content.text(userInput)];
+    final response = await model.generateContent(content);
+
+    return response.text!;
+  }
+
   void _showSpeechToTextModalSheet() {
     showModalBottomSheet(
       context: context,
@@ -129,6 +144,9 @@ class _ExplorePageState extends State<ExplorePage> {
           stream: _speechStreamController.stream,
           initialData: '',
           builder: (context, snapshot) {
+            if (_speechToText.isListening == false && _lastWords != '') {
+              // _getGenerativeAIResponse(_lastWords);
+            }
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -173,6 +191,8 @@ class _ExplorePageState extends State<ExplorePage> {
     ).then((value) {
       // This code executes after the bottom sheet is closed
       setState(() {
+        _stopListening();
+
         _lastWords = '';
         ai = false; // Set ai to false when the bottom sheet is closed
         isSelected = [true, false];
@@ -184,11 +204,12 @@ class _ExplorePageState extends State<ExplorePage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
+        _startListening();
+
         return StreamBuilder<String>(
           stream: _speechStreamController.stream,
           initialData: '',
           builder: (context, snapshot) {
-            _startListening();
             return Container(
               width: MediaQuery.of(context).size.width, // Take entire width
               padding: EdgeInsets.all(16.0),
@@ -205,8 +226,12 @@ class _ExplorePageState extends State<ExplorePage> {
                           onTap: () {
                             _startListening();
                           },
-                          child: Icon(Icons.mic_off)),
-                  SizedBox(height: 16.0),
+                          child: const Opacity(
+                            opacity: 0.3,
+                            child: Icon(Icons.mic),
+                          ),
+                        ),
+                  const SizedBox(height: 16.0),
                   Text(
                     _speechToText.isListening
                         ? '${snapshot.data}'
@@ -240,7 +265,13 @@ class _ExplorePageState extends State<ExplorePage> {
           },
         );
       },
-    );
+    ).then((value) {
+      // This code executes after the bottom sheet is closed
+      setState(() {
+        _stopListening();
+        _lastWords = '';
+      });
+    });
   }
 
   @override
@@ -550,6 +581,8 @@ class _ExplorePageState extends State<ExplorePage> {
                               padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                               child: GestureDetector(
                                 onTap: () {
+                                  TextToSpeech tts = TextToSpeech();
+                                  tts.speak("Hello");
                                   Navigator.of(context).push(
                                     fromBottomRoute(const NavigationPage()),
                                   );
