@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/gemini/categories/fetchTourismPlaces.dart';
 import 'package:gadc/functions/gemini/categories/imageSearch.dart';
@@ -19,9 +18,10 @@ import 'package:shimmer/shimmer.dart';
 class NearbyMainPage extends StatefulWidget {
   final double? latitude;
   final double? longitude;
+  final List<Map<String, dynamic>> allData;
 
-  const NearbyMainPage({Key? key, this.latitude, this.longitude})
-      : super(key: key);
+  const NearbyMainPage(
+      {super.key, this.latitude, this.longitude, required this.allData});
 
   @override
   State<NearbyMainPage> createState() => _NearbyMainPageState();
@@ -38,11 +38,10 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
   ];
 
   List<Map<String, dynamic>> nearData = [];
-  List<Map<String, dynamic>> allData = [];
 
   void getNearbyData(LatLng center) {
     nearData = [];
-    for (var data in allData) {
+    for (var data in widget.allData) {
       double distance = calculateDistance(
           LatLng(data['latitude'], data['longitude']), center);
       if (distance <= 100) {
@@ -55,27 +54,6 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
   void initState() {
     super.initState();
     loadCategories();
-    fetchUserData();
-  }
-
-  void fetchUserData() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('your_collection')
-          .orderBy('timestamp', descending: true)
-          .get();
-
-      for (var doc in querySnapshot.docs) {
-        if (doc.exists) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          allData.add(data);
-        }
-      }
-    } catch (error) {
-      print("Error fetching user data: $error");
-      // showToast('Failed to fetch data: $error'); // Uncomment if you have showToast function
-    }
   }
 
   Future<void> loadCategories() async {
@@ -214,9 +192,13 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
     );
   }
 
-  Future<void> saveFavorite(Map<String, dynamic> place) async {
+  Future<void> saveFavorite(
+      Map<String, dynamic> place, List<String> imageUrls) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favorites = prefs.getStringList('favorites') ?? [];
+
+    // Add imageUrls to the place object
+    place['imageUrls'] = imageUrls;
 
     // Convert place to a JSON string and add to the favorites list
     String placeJson = json.encode(place);
@@ -394,9 +376,12 @@ class _NearbyMainPageState extends State<NearbyMainPage> {
                                       right: 16,
                                       child: GestureDetector(
                                         onTap: () {
-                                          saveFavorite(place);
+                                          saveFavorite(place, imageUrls);
                                         },
-                                        child: Icon(Icons.bookmark_border),
+                                        child: Opacity(
+                                          opacity: 0.5,
+                                          child: Icon(Icons.bookmark),
+                                        ),
                                       ),
                                     ),
                                   ],
