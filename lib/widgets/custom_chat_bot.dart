@@ -31,52 +31,57 @@ class _CustomChatBotState extends State<CustomChatBot> {
           Row(
             children: [
               Expanded(
-                child: TextFormField(
-                  controller: _textController,
-                  decoration: InputDecoration(
-                    labelText: '   Ask Gemini',
-                    border: OutlineInputBorder(),
-                    suffixIcon: GestureDetector(
-                      onTap: () async {
-                        String userInput = _textController.text.trim();
-                        // Close the Keyboard and clear the text
-                        _textController.clear();
-                        FocusScope.of(context).unfocus();
+                  child: TextFormField(
+                controller: _textController,
+                decoration: InputDecoration(
+                  labelText: 'Ask Gemini',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                        24.0), // Adjust the radius as needed
+                  ),
+                  contentPadding: EdgeInsets.fromLTRB(
+                      16.0, 32.0, 16.0, 0), // Add top padding of 16
+                  suffixIcon: GestureDetector(
+                    onTap: () async {
+                      String userInput = _textController.text.trim();
+                      // Close the Keyboard and clear the text
+                      _textController.clear();
+                      FocusScope.of(context).unfocus();
 
-                        if (userInput.isNotEmpty) {
+                      if (userInput.isNotEmpty) {
+                        setState(() {
+                          chatLog.add(ChatMessage(
+                            text: userInput,
+                            sender: ChatMessageSender.user,
+                          ));
+                        });
+
+                        try {
+                          String response =
+                              await _getGenerativeAIResponse(userInput);
                           setState(() {
                             chatLog.add(ChatMessage(
-                                text: userInput,
-                                sender: ChatMessageSender.user));
+                              text: response,
+                              sender: ChatMessageSender.bot,
+                            ));
                           });
-
-                          try {
-                            String response =
-                                await _getGenerativeAIResponse(userInput);
-                            setState(() {
-                              chatLog.add(ChatMessage(
-                                  text: response,
-                                  sender: ChatMessageSender.bot));
-                            });
-                          } catch (e) {
-                            _textController.clear();
-                            FocusScope.of(context).unfocus();
-                            print('Error fetching response: $e');
-                            setState(() {
-                              chatLog.add(ChatMessage(
-                                  text: 'An error occurred',
-                                  sender: ChatMessageSender.bot));
-                            });
-                          }
+                        } catch (e) {
+                          _textController.clear();
+                          FocusScope.of(context).unfocus();
+                          print('Error fetching response: $e');
+                          setState(() {
+                            chatLog.add(ChatMessage(
+                              text: 'An error occurred',
+                              sender: ChatMessageSender.bot,
+                            ));
+                          });
                         }
-                      },
-                      child: const Icon(
-                        Icons.send_rounded,
-                      ),
-                    ),
+                      }
+                    },
+                    child: const Icon(Icons.send_rounded),
                   ),
                 ),
-              ),
+              )),
             ],
           ),
           const SizedBox(height: 16),

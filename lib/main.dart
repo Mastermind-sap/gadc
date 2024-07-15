@@ -13,6 +13,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   await prefs.setStringList('markers', []);
+
   await askLocationPermission();
 
   runApp(
