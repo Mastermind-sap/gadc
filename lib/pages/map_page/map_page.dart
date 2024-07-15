@@ -9,12 +9,15 @@ import 'package:gadc/widgets/custom_map/custom_map.dart';
 import 'package:gadc/widgets/location_fetch_bottom_sheet/multiple_fetch_bottom_sheet.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:async';
 
 import 'package:provider/provider.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  final bool mapTutBool;
+  const MapPage({super.key, required this.mapTutBool});
 
   @override
   State<MapPage> createState() => MapPageState();
@@ -33,6 +36,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       ValueNotifier<LatLng>(LatLng(0, 0));
 
   LatLng center = LatLng(21, 78);
+  bool mapTutBool = true;
 
   @override
   void initState() {
@@ -122,6 +126,9 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   void startListeningToMapCenterChanges() {
     Timer.periodic(const Duration(milliseconds: 100), (timer) {
       updateAnotherVariable();
+      if (widget.mapTutBool == true && mapTutBool) {
+        CreateMapTut();
+      }
     });
   }
 
@@ -131,6 +138,88 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
       zoom: zoom,
       rotation: 0,
     );
+  }
+
+  //tut
+  GlobalKey _mapPageTut = GlobalKey();
+
+  void CreateMapTut() {
+    mapTutBool = false;
+    List<TargetFocus> targets = [
+      // Profile Section
+      TargetFocus(
+        identify: "Profile Section",
+        keyTarget: _mapPageTut,
+        contents: [
+          TargetContent(
+            align: ContentAlign.left,
+            child: Container(
+              padding: const EdgeInsets.only(),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 1.0, end: 4),
+                      duration: Duration(seconds: 1),
+                      builder: (context, scale, child) {
+                        return Transform.scale(
+                          scale: scale,
+                          child: Opacity(
+                            opacity: 0.1,
+                            child: LottieBuilder.asset(
+                                "assets/tut_background.json"),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "MAP SECTION",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 36.0,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            bottom: 16.0,
+                            top: 8,
+                          ),
+                          child: Text(
+                            "- Use to Locate Yourself,\n- Explore Near By Locations,\n- View Structures close to the Map!",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+
+    final tutorial = TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.lightBlue,
+      onFinish: () {},
+      hideSkip: true,
+      opacityShadow: 0.1,
+      onClickTarget: (target) {
+        // _speakBot(target.identify);
+      },
+    );
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      tutorial.show(context: context);
+    });
   }
 
   @override
@@ -207,6 +296,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 16, 16),
             child: Column(
+              key: _mapPageTut,
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
