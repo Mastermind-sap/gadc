@@ -41,6 +41,7 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   void initState() {
     super.initState();
+
     focusAuraSearch.addListener(onFocusChange);
     startListeningToProfilePictureChanges();
     _initSpeech();

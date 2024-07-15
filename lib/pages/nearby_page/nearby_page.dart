@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gadc/pages/nearby_page/fav_page.dart';
 import 'package:gadc/pages/nearby_page/nearby_main_page.dart';
@@ -19,17 +20,39 @@ class SurroundingPage extends StatefulWidget {
 class _SurroundingPageState extends State<SurroundingPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  List<Map<String, dynamic>> allData = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    fetchUserData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void fetchUserData() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('your_collection')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          allData.add(data);
+        }
+      }
+    } catch (error) {
+      print("Error fetching user data: $error");
+      // showToast('Failed to fetch data: $error'); // Uncomment if you have showToast function
+    }
   }
 
   @override
@@ -101,8 +124,11 @@ class _SurroundingPageState extends State<SurroundingPage>
                   NearbyMainPage(
                     latitude: widget.latitude,
                     longitude: widget.longitude,
+                    allData: allData,
                   ),
-                  const FavPage(),
+                  FavPage(
+                    allData: allData,
+                  ),
                 ],
               ),
             ),

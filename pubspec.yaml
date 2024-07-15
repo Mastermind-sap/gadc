@@ -66,6 +66,7 @@ dependencies:
   provider: ^6.1.2
   speech_to_text: ^6.6.2
   flutter_tts: ^4.0.2
+  location: ^6.0.2
   
 
 dev_dependencies:

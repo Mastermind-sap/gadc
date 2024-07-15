@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:gadc/functions/location/locate_me.dart';
 import 'package:gadc/provider/SharedDataProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   await prefs.setStringList('markers', []);
+  await askLocationPermission();
 
   runApp(
     MultiProvider(
