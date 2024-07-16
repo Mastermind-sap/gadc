@@ -34,11 +34,21 @@ Widget multipleLocationBottomSheet(
   return Column(
     children: [
       Padding(
-        padding: EdgeInsets.fromLTRB(8, 32, 8, 0),
-        child: Text(
-          "Structures Nearby",
-          textAlign: TextAlign.left,
-          style: TextStyle(fontSize: 32),
+        padding: EdgeInsets.fromLTRB(16, 32, 8, 8),
+        child: Row(
+          children: [
+            Icon(
+              Icons.view_in_ar_rounded,
+              size: 48,
+            ),
+            SizedBox(
+              width: 8,
+            ),
+            Text(
+              "NEARBY",
+              style: TextStyle(fontSize: 32),
+            )
+          ],
         ),
       ),
       Expanded(

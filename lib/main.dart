@@ -1,3 +1,4 @@
+import 'package:feedback/feedback.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gadc/functions/location/locate_me.dart';
@@ -21,7 +22,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => SharedDataProvider()),
       ],
-      child: const GADC(),
+      child: BetterFeedback(child: const GADC()),
     ),
   );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gadc/functions/gemini/ai_context/ai_context.dart';
 import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:lottie/lottie.dart';
@@ -109,7 +110,7 @@ class _CustomChatBotState extends State<CustomChatBot> {
       apiKey: GEMINI_API_KEY,
     );
 
-    final content = [Content.text(userInput)];
+    final content = [Content.text("$GEMINI_AI_CONTEXT $userInput")];
     final response = await model.generateContent(content);
 
     return response.text!;

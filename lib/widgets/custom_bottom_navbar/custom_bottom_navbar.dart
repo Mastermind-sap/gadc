@@ -22,6 +22,8 @@ class CustomBottomNavbar extends StatelessWidget {
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         ),
         child: NavigationBar(
+          backgroundColor: Colors.blue.withOpacity(0.1),
+          indicatorColor: Colors.red.withOpacity(0.1),
           selectedIndex: selected,
           onDestinationSelected: (index) => onTap(index),
           destinations: const [
