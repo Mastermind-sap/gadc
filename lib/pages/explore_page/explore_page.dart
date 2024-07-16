@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
+import 'package:gadc/functions/gemini/ai_context/ai_context.dart';
 import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
 import 'package:gadc/functions/location/geocoding.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
@@ -243,11 +244,10 @@ class _ExplorePageState extends State<ExplorePage>
       },
     );
 
-    Future.delayed(Duration(milliseconds: 500), () {
+    _speakBot("Welcome to AURA, your Three Dimensonal Apartment Guide!");
+
+    Future.delayed(Duration(seconds: 2), () {
       tutorial.show(context: context);
-      Future.delayed(Duration(milliseconds: 500), () {
-        _speakBot("Welcome to AURA, your Three Dimensonal Apartment Guide!");
-      });
     });
   }
 
@@ -323,7 +323,7 @@ class _ExplorePageState extends State<ExplorePage>
       apiKey: GEMINI_API_KEY,
     );
 
-    final content = [Content.text(userInput)];
+    final content = [Content.text("$GEMINI_AI_CONTEXT $userInput")];
     final response = await model.generateContent(content);
 
     return response.text!;

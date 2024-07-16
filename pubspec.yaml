@@ -69,6 +69,9 @@ dependencies:
   location: ^6.0.2
   tutorial_coach_mark: ^1.2.11
   animated_text_kit: ^4.2.2
+  feedback: ^3.1.0
+  flutter_email_sender: ^6.0.3
+  permission_handler: ^11.3.1
   
 
 dev_dependencies:
@@ -101,7 +104,6 @@ flutter:
     - assets/splash_screen.json
     - assets/current_pointer.png
     - assets/no_result.json
-    - assets/empty_dark.json
     - assets/anonymous_profile.png
     - assets/icon.png
     - assets/pin.png
@@ -114,6 +116,7 @@ flutter:
     - assets/ai_speaking.json
     - assets/query.json
     - assets/tut_background.json
+    - assets/cat.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -49,3 +49,8 @@ Future<void> signOut() async {
     print("Error signing out: $e");
   }
 }
+
+String getUserEmail() {
+  User? user = FirebaseAuth.instance.currentUser;
+  return user?.email ?? "None";
+}

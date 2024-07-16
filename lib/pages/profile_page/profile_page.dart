@@ -1,12 +1,17 @@
-import 'dart:ffi';
+import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -88,6 +93,14 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  Future<String> saveScreenshot(Uint8List screenshot) async {
+    final directory = await getTemporaryDirectory();
+    final filePath = '${directory.path}/screenshot.png';
+    final file = File(filePath);
+    await file.writeAsBytes(screenshot);
+    return filePath;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,12 +161,28 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: (userName == "None")
                           ? GestureDetector(
                               onTap: handleLogin,
-                              child: const Text(
-                                '..LOG IN?',
+                              child: DefaultTextStyle(
                                 style: TextStyle(
-                                  fontFamily: 'Readex Pro',
-                                  fontSize: 36,
-                                  letterSpacing: 0,
+                                  fontSize: 30.0,
+                                  color: (Theme.of(context).brightness ==
+                                          Brightness.dark)
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                                child: AnimatedTextKit(
+                                  isRepeatingAnimation: false,
+                                  pause: Duration(
+                                    milliseconds: 500,
+                                  ),
+                                  animatedTexts: [
+                                    TypewriterAnimatedText('AURA'),
+                                    TypewriterAnimatedText(
+                                        'Mhm... Who Are You ..'),
+                                    TypewriterAnimatedText('.. Login ?'),
+                                  ],
+                                  onTap: () {
+                                    handleLogin();
+                                  },
                                 ),
                               ),
                             )
@@ -219,8 +248,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               },
                             )
                           : LottieBuilder.asset(
-                              "assets/empty_dark.json",
-                              repeat: true,
+                              "assets/cat.json",
+                              repeat: false,
                               frameRate: const FrameRate(120),
                             ),
                     ),
@@ -230,7 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).highlightColor,
+                        color: Colors.blue.withOpacity(0.1),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24),
@@ -256,33 +285,87 @@ class _ProfilePageState extends State<ProfilePage> {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               children: [
-                                _buildSettingsItem(context, 'Feedback'),
-                                _buildSettingsItem(context, 'Report Bug'),
-                                _buildSettingsItem(context, 'About'),
+                                GestureDetector(
+                                  onTap: () {
+                                    BetterFeedback.of(context)
+                                        .show((UserFeedback feedback) async {
+                                      final picUrl = await saveScreenshot(
+                                          feedback.screenshot);
+                                      showToast("Start Sending");
+
+                                      final Email email = Email(
+                                        body: feedback
+                                            .text, // Use feedback.text to get the text feedback
+                                        subject: 'User Feedback on AURA',
+                                        recipients: [
+                                          'soulgaurav08@gmail.com'
+                                        ], // Replace with your email address
+                                        attachmentPaths: [picUrl],
+                                        isHTML: false,
+                                      );
+
+                                      try {
+                                        await FlutterEmailSender.send(email);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Feedback sent successfully')),
+                                        );
+                                      } catch (error) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Failed to send feedback' +
+                                                      error.toString())),
+                                        );
+                                      }
+                                    });
+                                  },
+                                  child: _buildSettingsItem(
+                                    context,
+                                    'Feedback',
+                                    trailing: const Icon(
+                                      Icons.bug_report_rounded,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: _buildSettingsItem(
+                                    context,
+                                    'About Us',
+                                    trailing: const Icon(
+                                      Icons.developer_mode_rounded,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
                                 (userName != "None")
-                                    ? _buildSettingsItem(
-                                        context,
-                                        'Log Out',
-                                        trailing: GestureDetector(
-                                          onTap: handleLogout,
-                                          child: const Icon(
+                                    ? GestureDetector(
+                                        onTap: handleLogout,
+                                        child: _buildSettingsItem(
+                                          context,
+                                          'Log Out',
+                                          trailing: const Icon(
                                             Icons.logout_rounded,
                                             color: Color(0xFFFF5151),
                                           ),
                                         ),
                                       )
-                                    : _buildSettingsItem(
-                                        context,
-                                        'Log In',
-                                        trailing: GestureDetector(
-                                          onTap: handleLogin,
-                                          child: const Icon(
+                                    : GestureDetector(
+                                        onTap: handleLogin,
+                                        child: _buildSettingsItem(
+                                          context,
+                                          'Log In',
+                                          trailing: const Icon(
                                             Icons.login,
                                             color: Color.fromARGB(
                                                 255, 50, 255, 88),
                                           ),
                                         ),
-                                      )
+                                      ),
                               ],
                             ),
                           ],

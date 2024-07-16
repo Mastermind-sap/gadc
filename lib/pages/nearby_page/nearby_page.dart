@@ -58,81 +58,83 @@ class _SurroundingPageState extends State<SurroundingPage>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(8, 16, 8, 0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Card(
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      color: (Theme.of(context).brightness == Brightness.dark)
-                          ? const Color.fromARGB(255, 29, 36, 40)
-                          : Colors.white,
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(6),
-                        child: Icon(
-                          Icons.arrow_drop_down,
-                          size: 24,
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(8, 16, 8, 0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Card(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        color: (Theme.of(context).brightness == Brightness.dark)
+                            ? const Color.fromARGB(255, 29, 36, 40)
+                            : Colors.white,
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(6),
+                          child: Icon(
+                            Icons.arrow_drop_down,
+                            size: 24,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  Expanded(
-                    child: TabBar(
-                      controller: _tabController,
-                      tabs: const [
-                        Tab(
-                          child: Text(
-                            "EXPLORE",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            "FAVS",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ],
-                      indicatorColor: Theme.of(context).colorScheme.secondary,
+                    const SizedBox(
+                      width: 16,
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: TabBar(
+                        controller: _tabController,
+                        tabs: const [
+                          Tab(
+                            child: Text(
+                              "EXPLORE",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                          Tab(
+                            child: Text(
+                              "FAVS",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ],
+                        indicatorColor: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  NearbyMainPage(
-                    latitude: widget.latitude,
-                    longitude: widget.longitude,
-                    allData: allData,
-                  ),
-                  FavPage(
-                    allData: allData,
-                  ),
-                ],
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    NearbyMainPage(
+                      latitude: widget.latitude,
+                      longitude: widget.longitude,
+                      allData: allData,
+                    ),
+                    FavPage(
+                      allData: allData,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
