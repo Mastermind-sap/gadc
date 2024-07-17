@@ -72,6 +72,7 @@ dependencies:
   feedback: ^3.1.0
   flutter_email_sender: ^6.0.3
   permission_handler: ^11.3.1
+  url_launcher: ^6.3.0
   
 
 dev_dependencies:
@@ -117,6 +118,12 @@ flutter:
     - assets/query.json
     - assets/tut_background.json
     - assets/cat.json
+    - assets/gaurav.png
+    - assets/gugu.jpg
+    - assets/mastermind_sap.jpg
+    - assets/pragyan.jpg
+    - assets/linkedin_icon.png
+    - assets/github_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
