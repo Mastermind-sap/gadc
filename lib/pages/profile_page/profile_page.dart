@@ -6,8 +6,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
+import 'package:gadc/functions/launch_url/launch_url.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
+import 'package:gadc/pages/navigation_page/navigation_page.dart';
+import 'package:gadc/pages/profile_page/developers_page.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -298,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             .text, // Use feedback.text to get the text feedback
                                         subject: 'User Feedback on AURA',
                                         recipients: [
-                                          'soulgaurav08@gmail.com'
+                                          'gaurav.moocs@gmail.com'
                                         ], // Replace with your email address
                                         attachmentPaths: [picUrl],
                                         isHTML: false,
@@ -332,7 +336,39 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    launchURL(
+                                        'https://sites.google.com/view/aura3dnavigator/home?authuser=1');
+                                  },
+                                  child: _buildSettingsItem(
+                                    context,
+                                    'Privacy Policy',
+                                    trailing: const Icon(
+                                      Icons.privacy_tip_outlined,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    launchURL(
+                                        'https://sites.google.com/view/aura3dnavigator-t-and-c/home?authuser=1');
+                                  },
+                                  child: _buildSettingsItem(
+                                    context,
+                                    'Terms & Conditions',
+                                    trailing: const Icon(
+                                      Icons.layers,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      fromBottomRoute(DeveloperMessageWidget()),
+                                    );
+                                  },
                                   child: _buildSettingsItem(
                                     context,
                                     'About Us',

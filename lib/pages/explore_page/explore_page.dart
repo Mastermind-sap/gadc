@@ -306,7 +306,7 @@ class _ExplorePageState extends State<ExplorePage>
     setState(() {});
   }
 
-  StreamController<String> _speechStreamController =
+  final StreamController<String> _speechStreamController =
       StreamController<String>.broadcast();
 
   void _onSpeechResult(SpeechRecognitionResult result) {
