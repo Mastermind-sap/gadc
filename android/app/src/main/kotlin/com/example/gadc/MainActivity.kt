@@ -1,4 +1,4 @@
-package com.example.gadc
+package com.aura3dinbetween.aura
 
 import android.content.Context
 import android.os.Bundle
@@ -18,13 +18,13 @@ class MainActivity: FlutterActivity() {
     private lateinit var llmInference: LlmInference
 
     private val modelExists: Boolean
-        get() = File("/storage/emulated/0/Android/data/com.example.gadc/files/data/user/0/com.example.gadc/files/model.bin").exists()
+        get() = File("/storage/emulated/0/Android/data/com.aura3dinbetween.aura/files/data/user/0/com.aura3dinbetween.aura/files/model.bin").exists()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (modelExists) {val options = LlmInference.LlmInferenceOptions.builder()
-            .setModelPath("/storage/emulated/0/Android/data/com.example.gadc/files/data/user/0/com.example.gadc/files/model.bin")
+            .setModelPath("/storage/emulated/0/Android/data/com.aura3dinbetween.aura/files/data/user/0/com.aura3dinbetween.aura/files/model.bin")
             .setTemperature(1F)
             .build()
 
