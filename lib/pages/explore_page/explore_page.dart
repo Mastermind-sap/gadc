@@ -12,7 +12,6 @@ import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.d
 import 'package:gadc/functions/gemini/ai_context/ai_context.dart';
 import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
 import 'package:gadc/functions/location/geocoding.dart';
-import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:gadc/pages/map_page/map_page.dart';
 import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/widgets/custom_chat_bot.dart';
@@ -104,7 +103,7 @@ class _ExplorePageState extends State<ExplorePage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Welcome To,",
+                      "Welcome,",
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 48.0),
                     ),
@@ -244,9 +243,9 @@ class _ExplorePageState extends State<ExplorePage>
       },
     );
 
-    _speakBot("Welcome to AURA, your Three Dimensonal Apartment Guide!");
+    // _speakBot("Welcome to AURA, your Three Dimensonal Apartment Guide!");
 
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       tutorial.show(context: context);
     });
   }
