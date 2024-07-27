@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gadc/functions/toast/show_toast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 Future<User?> signInWithGoogle() async {
@@ -27,7 +28,8 @@ Future<User?> signInWithGoogle() async {
     return userCredential.user;
   } catch (e) {
     // Handle any errors
-    print("Error during Google sign-in: $e");
+    showToast("Error during Google sign-in: $e");
+    print(e);
     return null;
   }
 }

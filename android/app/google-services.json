@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:278924520494:android:48d6a76d79d0b9bd0ec3bf",
+        "mobilesdk_app_id": "1:278924520494:android:be689d3f9146f0400ec3bf",
         "android_client_info": {
           "package_name": "com.aura3dinbetween.aura"
         }
@@ -29,6 +29,13 @@
             {
               "client_id": "278924520494-pgebv45q48c1p719k31b1r5jnpatfnfu.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "278924520494-4cfun2ka739duujmllnaf1j4o0c8g6n2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.aura3dinbetween.aura"
+              }
             }
           ]
         }

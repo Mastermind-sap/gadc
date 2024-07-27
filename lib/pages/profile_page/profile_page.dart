@@ -10,7 +10,6 @@ import 'package:gadc/custom_routes/from_bottom_route.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/launch_url/launch_url.dart';
 import 'package:gadc/functions/toast/show_toast.dart';
-import 'package:gadc/pages/navigation_page/navigation_page.dart';
 import 'package:gadc/pages/profile_page/developers_page.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
