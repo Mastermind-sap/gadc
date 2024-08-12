@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Participating%20in-Gemini%20API%20Developer%20Competition-blue" alt="Gemini API Developer Competition">
 
   <!-- Team Size Badge -->
-  <img src="https://img.shields.io/badge/Team%20Size-4-ff69b4" alt="Team Size: 4">
+  <img src="https://img.shields.io/badge/Team%20Size-4-ff69b4" alt="Team Size: 3">
 
   <!-- Project Status Badge -->
   <img src="https://img.shields.io/badge/Status-In%20Progress-yellow" alt="Project Status: In Progress">
