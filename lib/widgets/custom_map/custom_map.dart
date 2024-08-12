@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:gadc/functions/location/calculateDistance.dart';
 import 'package:gadc/widgets/location_fetch_bottom_sheet/single_location_bottom_sheet.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,6 +45,7 @@ class _CustomMapState extends State<CustomMap> {
   late StreamSubscription<AccelerometerEvent> _accelerometerSubscription;
   ValueNotifier<double> _currentRotation = ValueNotifier(0.0);
   List<Marker> _markers = [];
+  late String path;
 
   @override
   void initState() {
@@ -53,6 +57,8 @@ class _CustomMapState extends State<CustomMap> {
       _loadMarkers();
     });
   }
+
+  final _cacheStore = MemCacheStore();
 
   Future<void> _loadMarkers() async {
     List<Marker> markers = await getMarkers();
@@ -169,6 +175,11 @@ class _CustomMapState extends State<CustomMap> {
               urlTemplate: tileLayerUrl,
               subdomains: ['a', 'b', 'c'],
               retinaMode: true,
+              tileProvider: CachedTileProvider(
+                  // maxStale keeps the tile cached for the given Duration and
+                  // tries to revalidate the next time it gets requested
+                  maxStale: const Duration(days: 30),
+                  store: _cacheStore),
             ),
             MarkerLayer(markers: widget.markers),
             MarkerLayer(markers: _markers),
@@ -194,7 +205,7 @@ class _CustomMapState extends State<CustomMap> {
         ),
         if (calculateDistance(LatLng(widget.myLat, widget.myLong),
                 LatLng(widget.centerLat, widget.centerLong)) >
-            10.0)
+            20.0)
           const Center(
             child: Icon(
               Icons.circle,

@@ -3,19 +3,21 @@ import 'package:flutter/material.dart';
 class CustomBottomNavbar extends StatelessWidget {
   final int selected;
   final Function onTap;
-  final bool isVisible;
 
   const CustomBottomNavbar({
     Key? key,
     required this.selected,
     required this.onTap,
-    required this.isVisible,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Determine if the device is in landscape mode
+    bool isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Visibility(
-      visible: isVisible,
+      visible: !isLandscape, // Hide the navbar in landscape mode
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
           height: 60, // Adjust the height as needed

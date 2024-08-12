@@ -89,7 +89,6 @@ class _NavigationPageState extends State<NavigationPage> {
       bottomNavigationBar: CustomBottomNavbar(
         onTap: bottomNavigator,
         selected: currentBottomIndex,
-        isVisible: true,
       ),
       body: getPage(),
     );
