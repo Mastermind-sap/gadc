@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gadc/custom_routes/from_bottom_route.dart';
+import 'package:gadc/functions/debouncer/debouncer.dart';
 import 'package:gadc/functions/firebase/authentication/google_auth/google_auth.dart';
 import 'package:gadc/functions/gemini/ai_context/ai_context.dart';
 import 'package:gadc/functions/gemini/api_keys/apiKeys.dart';
@@ -102,7 +103,16 @@ class _ExplorePageState extends State<ExplorePage>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: LottieBuilder.asset(
+                        "assets/up.json",
+                        frameRate: const FrameRate(120),
+                        repeat: false,
+                      ),
+                    ),
+                    const Text(
                       "Welcome,",
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 48.0),
@@ -245,7 +255,7 @@ class _ExplorePageState extends State<ExplorePage>
 
     // _speakBot("Welcome to AURA, your Three Dimensonal Apartment Guide!");
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       tutorial.show(context: context);
     });
   }
@@ -270,7 +280,10 @@ class _ExplorePageState extends State<ExplorePage>
     Timer.periodic(const Duration(milliseconds: 10), (timer) {
       setState(() {
         imageUrl = getUserImageUrl();
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+        if (MediaQuery.of(context).orientation != Orientation.landscape) {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        }
       });
     });
   }
@@ -330,7 +343,7 @@ class _ExplorePageState extends State<ExplorePage>
 
   Future<void> _speakAI(String text) async {
     await _flutterTts.setLanguage('en-US');
-    await _flutterTts.setPitch(1);
+    await _flutterTts.setPitch(1.5);
     await _flutterTts.setSpeechRate(0.6);
 
     String toSpeak = await _getGenerativeAIResponse(text);
@@ -340,8 +353,8 @@ class _ExplorePageState extends State<ExplorePage>
 
   Future<void> _speakBot(String text) async {
     await _flutterTts.setLanguage('en-US');
-    await _flutterTts.setPitch(1);
-    await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.setPitch(1.5);
+    await _flutterTts.setSpeechRate(0.6);
 
     await _flutterTts.speak(text);
   }
@@ -355,56 +368,59 @@ class _ExplorePageState extends State<ExplorePage>
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return StreamBuilder<String>(
-          stream: _speechStreamController.stream,
-          initialData: '',
-          builder: (context, snapshot) {
-            if (_speechToText.isListening == false && _lastWords != '') {
-              // _getGenerativeAIResponse(_lastWords);
-              ai_thinking = true;
-              _speakAI(_lastWords);
-            }
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-              child: Column(
-                children: [
-                  _speechToText.isListening
-                      ? GestureDetector(
-                          onTap: () {
-                            _stopListening();
-                          },
-                          child: LottieBuilder.asset(
-                            "assets/ai_speaking.json",
-                          ),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            ai_thinking = false;
-                            _startListening();
-                          },
-                          child: LottieBuilder.asset(
-                            "assets/ai_speaking.json",
-                            repeat: false,
-                          ),
-                        ),
-                  Text(
-                    // If listening is active show the recognized words
+        return SingleChildScrollView(
+          child: StreamBuilder<String>(
+            stream: _speechStreamController.stream,
+            initialData: '',
+            builder: (context, snapshot) {
+              if (_speechToText.isListening == false && _lastWords != '') {
+                // _getGenerativeAIResponse(_lastWords);
+                ai_thinking = true;
+                _speakAI(_lastWords);
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                child: Column(
+                  children: [
                     _speechToText.isListening
-                        ? '${snapshot.data}'
-                        // If listening isn't active but could be tell the user
-                        // how to start it, otherwise indicate that speech
-                        // recognition is not yet ready or not supported on
-                        // the target device
-                        : _speechEnabled
-                            ? 'Tap to Ask Query'
-                            : 'Speech not available',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  if (ai_thinking) LottieBuilder.asset("assets/ai_lottie.json")
-                ],
-              ),
-            );
-          },
+                        ? GestureDetector(
+                            onTap: () {
+                              _stopListening();
+                            },
+                            child: LottieBuilder.asset(
+                              "assets/ai_speaking.json",
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              ai_thinking = false;
+                              _startListening();
+                            },
+                            child: LottieBuilder.asset(
+                              "assets/ai_speaking.json",
+                              repeat: false,
+                            ),
+                          ),
+                    Text(
+                      // If listening is active show the recognized words
+                      _speechToText.isListening
+                          ? '${snapshot.data}'
+                          // If listening isn't active but could be tell the user
+                          // how to start it, otherwise indicate that speech
+                          // recognition is not yet ready or not supported on
+                          // the target device
+                          : _speechEnabled
+                              ? 'Tap to Ask Query'
+                              : 'Speech not available',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    if (ai_thinking)
+                      LottieBuilder.asset("assets/ai_lottie.json")
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     ).then((value) {
@@ -501,6 +517,8 @@ class _ExplorePageState extends State<ExplorePage>
     focusAuraSearch.dispose();
     super.dispose();
   }
+
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
@@ -631,7 +649,9 @@ class _ExplorePageState extends State<ExplorePage>
                                     controller: _searchController,
                                     focusNode: focusAuraSearch,
                                     onChanged: (value) {
-                                      _performSearchOnChange(value);
+                                      _debouncer.run(() {
+                                        _performSearchOnChange(value);
+                                      });
                                     },
                                     autofocus: false,
                                     obscureText: false,
