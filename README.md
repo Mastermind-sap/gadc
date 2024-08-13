@@ -44,8 +44,8 @@
     <li>🖼️<a href="#screenshots"> Screenshots</a></li>
     <li>🚀<a href="#getting-started"> Getting Started</a></li>
     <li>🤝<a href="#contributing"> Contributing</a></li>
-    <li>🔗<a href="#references"> References</a></li>
-    <li>🎨<a href="#credits"> Credits</a></li>
+<!--     <li>🔗<a href="#references"> References</a></li>
+    <li>🎨<a href="#credits"> Credits</a></li> -->
     <li>👥<a href="#team"> Team Members</a></li>
   </ul>
 </details>
@@ -145,33 +145,34 @@ Just download it from the Play Store or from the [releases](https://github.com/M
 
 <!--------------------------------------------------- REFERENCES ----------------------------------------------------------------->
 
-<h2 id="references">🔗 References</h2>
+<!--<h2 id="references">🔗 References</h2>
 
   Here are some resources and references related to AURA:<br><br>
   - [Unity Documentation](https://docs.unity3d.com/Manual/index.html)
   - [AI Research Papers](https://arxiv.org/list/cs.AI/recent)
   - [GitHub Guides](https://guides.github.com/)
-
+-->
 
 <!--BREAK-->
-<p align="center">
+<!--<p align="center">
   <img src="https://github.com/user-attachments/assets/73763c21-1968-42e7-a765-4f46cec8dac2" width="1000" height="5" alt="Break Line">
 </p>
 
 <!--------------------------------------------------- CREDITS ----------------------------------------------------------------->
 
-<h2 id="credits">🎨 Credits</h2>
+<!--<h2 id="credits">🎨 Credits</h2>
 
   We would like to thank the following individuals and organizations for their contributions:<br><br>
   - **[Name 1](https://github.com/name1)**: For their contributions to the project.
   - **[Name 2](https://github.com/name2)**: For their support and advice.
   - **[Organization Name](https://www.organization.com)**: For providing valuable resources and tools.
-
+-->
 
 <!--BREAK-->
-<p align="center">
+<!--<p align="center">
   <img src="https://github.com/user-attachments/assets/73763c21-1968-42e7-a765-4f46cec8dac2" width="1000" height="5" alt="Break Line">
 </p>
+-->
 
 <!--------------------------------------------------- TEAM MEMBERS ----------------------------------------------------------------->
 
