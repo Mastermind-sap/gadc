@@ -135,7 +135,6 @@ Just download it from the Play Store or from the [releases](https://github.com/M
      ```
   3. **Make Your Changes**: Implement your changes and test them thoroughly.<br>
   4. **Submit a Pull Request**: Push your changes and create a pull request from your branch to the main repository.<br><br>
-  For more detailed instructions, refer to our [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 
 <!--BREAK-->
@@ -178,7 +177,7 @@ Just download it from the Play Store or from the [releases](https://github.com/M
 
 <h2 id="team">👥 Team Members</h2>
 <p>
-  <a href="https://github.com/Mastermind-sap"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/mastermind_sap.jpg" width="100" height="100" style="border-radius: 50%;" alt="Team Member 1"></a>
   <a href="https://github.com/Gaurav-822"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/gaurav.png" width="100" height="100" style="border-radius: 50%;" alt="Team Member 2"></a>
-  <a href="https://github.com/user3"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/gugu.jpg" width="100" height="100" style="border-radius: 50%;" alt="Team Member 3"></a>
+  <a href="https://github.com/Sid-NITS"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/gugu.jpg" width="100" height="100" style="border-radius: 50%;" alt="Team Member 3"></a>
+  <a href="https://github.com/Mastermind-sap"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/mastermind_sap.jpg" width="100" height="100" style="border-radius: 50%;" alt="Team Member 1"></a>
 </p>
