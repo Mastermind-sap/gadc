@@ -17,10 +17,6 @@
     </style>
 
     <style name="SplashScreenTheme" parent="Theme.SplashScreen">
-        <item name="android:windowSplashScreenBackground">#000000</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_anim_dark</item>
-        <item name="android:windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/LaunchTheme</item>
-
+        <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
 </resources>

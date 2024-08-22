@@ -38,7 +38,7 @@ class _CustomChatBotState extends State<CustomChatBot> {
                   labelText: 'Ask Gemini',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(
-                        24.0), // Adjust the radius as needed
+                        12.0), // Adjust the radius as needed
                   ),
                   contentPadding: EdgeInsets.fromLTRB(
                       16.0, 32.0, 16.0, 0), // Add top padding of 16
@@ -88,7 +88,10 @@ class _CustomChatBotState extends State<CustomChatBot> {
           const SizedBox(height: 16),
           Expanded(
             child: (chatLog.isEmpty)
-                ? LottieBuilder.asset("assets/query.json")
+                ? LottieBuilder.asset(
+                    "assets/question_lottie.json",
+                    repeat: false,
+                  )
                 : ListView.builder(
                     reverse: true,
                     itemCount: chatLog.length,

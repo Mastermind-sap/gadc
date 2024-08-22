@@ -291,108 +291,110 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             );
           },
         ),
-        Align(
-          alignment: const AlignmentDirectional(1, 1),
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 16, 16),
-            child: Column(
-              key: _mapPageTut,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _animatedMapController.animateTo(
-                      dest: LatLng(currLat, currLong),
-                      zoom: 17.5,
-                      rotation: 0,
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Icon(
-                      Icons.my_location_rounded,
-                      size: 36,
+        SafeArea(
+          child: Align(
+            alignment: const AlignmentDirectional(1, 1),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 16, 16),
+              child: Column(
+                key: _mapPageTut,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      _animatedMapController.animateTo(
+                        dest: LatLng(currLat, currLong),
+                        zoom: 17.5,
+                        rotation: 0,
+                      );
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Icon(
+                        Icons.my_location_rounded,
+                        size: 36,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Card(
-                  color: (Theme.of(context).brightness == Brightness.dark)
-                      ? const Color.fromARGB(255, 29, 36, 40)
-                      : Colors.white,
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            if (calculateDistance(
-                                    LatLng(currLat, currLong),
-                                    LatLng(_updateMapCenter().latitude,
-                                        _updateMapCenter().longitude)) <
-                                60000) {
-                              // to get new data get out of the town
-                              Navigator.of(context).push(
-                                fromBottomRoute(
-                                  const NavigationPage(
-                                    initialIndex: 0,
+                  const SizedBox(height: 8),
+                  Card(
+                    color: (Theme.of(context).brightness == Brightness.dark)
+                        ? const Color.fromARGB(255, 29, 36, 40)
+                        : Colors.white,
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (calculateDistance(
+                                      LatLng(currLat, currLong),
+                                      LatLng(_updateMapCenter().latitude,
+                                          _updateMapCenter().longitude)) <
+                                  60000) {
+                                // to get new data get out of the town
+                                Navigator.of(context).push(
+                                  fromBottomRoute(
+                                    const NavigationPage(
+                                      initialIndex: 0,
+                                    ),
                                   ),
-                                ),
-                              );
-                            } else {
-                              Navigator.of(context).push(
-                                fromBottomRoute(
-                                  NavigationPage(
-                                    initialIndex: 0,
-                                    latitude: _updateMapCenter().latitude,
-                                    longitude: _updateMapCenter().longitude,
+                                );
+                              } else {
+                                Navigator.of(context).push(
+                                  fromBottomRoute(
+                                    NavigationPage(
+                                      initialIndex: 0,
+                                      latitude: _updateMapCenter().latitude,
+                                      longitude: _updateMapCenter().longitude,
+                                    ),
                                   ),
-                                ),
+                                );
+                              }
+                            },
+                            child: const Icon(
+                              Icons.near_me_rounded,
+                              size: 36,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          GestureDetector(
+                            onTap: () async {
+                              // await Provider.of<SharedDataProvider>(context,
+                              //         listen: false)
+                              //     .getNearbyData();
+                              Provider.of<SharedDataProvider>(context,
+                                      listen: false)
+                                  .getNearbyData(center);
+                              var nearByData = Provider.of<SharedDataProvider>(
+                                      context,
+                                      listen: false)
+                                  .nearByToCenterData;
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return multipleLocationBottomSheet(
+                                      context, nearByData);
+                                },
                               );
-                            }
-                          },
-                          child: const Icon(
-                            Icons.near_me_rounded,
-                            size: 36,
+                            },
+                            child: const Icon(
+                              Icons.view_in_ar_rounded,
+                              size: 36,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        GestureDetector(
-                          onTap: () async {
-                            // await Provider.of<SharedDataProvider>(context,
-                            //         listen: false)
-                            //     .getNearbyData();
-                            Provider.of<SharedDataProvider>(context,
-                                    listen: false)
-                                .getNearbyData(center);
-                            var nearByData = Provider.of<SharedDataProvider>(
-                                    context,
-                                    listen: false)
-                                .nearByToCenterData;
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return multipleLocationBottomSheet(
-                                    context, nearByData);
-                              },
-                            );
-                          },
-                          child: const Icon(
-                            Icons.view_in_ar_rounded,
-                            size: 36,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
