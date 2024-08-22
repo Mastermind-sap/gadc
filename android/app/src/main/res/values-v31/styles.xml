@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="SplashScreenTheme" parent="Theme.SplashScreen">
+        <item name="android:windowSplashScreenBackground">#ffffff</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_anim_light</item>
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/LaunchTheme</item>
+
+    </style>
+</resources>

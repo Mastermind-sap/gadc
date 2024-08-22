@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
@@ -45,7 +46,6 @@ class _CustomMapState extends State<CustomMap> {
   late StreamSubscription<AccelerometerEvent> _accelerometerSubscription;
   ValueNotifier<double> _currentRotation = ValueNotifier(0.0);
   List<Marker> _markers = [];
-  late String path;
 
   @override
   void initState() {
@@ -58,13 +58,16 @@ class _CustomMapState extends State<CustomMap> {
     });
   }
 
-  final _cacheStore = MemCacheStore();
-
   Future<void> _loadMarkers() async {
     List<Marker> markers = await getMarkers();
     setState(() {
       _markers = markers;
     });
+  }
+
+  Future<String> getPath() async {
+    final cacheDirectory = await getApplicationDocumentsDirectory();
+    return cacheDirectory.path;
   }
 
   // Function to retrieve marker data from shared preferences
@@ -137,72 +140,78 @@ class _CustomMapState extends State<CustomMap> {
 
     return Stack(
       children: [
-        FlutterMap(
-          mapController: widget.mapController,
-          options: MapOptions(
-            cameraConstraint: CameraConstraint.contain(
-              bounds: LatLngBounds(
-                const LatLng(-90, -180), // Southwest corner of the bounds
-                const LatLng(90, 180), // Northeast corner of the bounds
-              ),
-            ),
-            keepAlive:
-                true, // so that it does not reset to initial position on changing pages
-            minZoom: 3.0,
-            maxZoom: 18.0,
-            enableScrollWheel: true, // Enable scroll wheel zoom
-            interactiveFlags: InteractiveFlag.pinchZoom |
-                InteractiveFlag.drag |
-                InteractiveFlag.doubleTapZoom |
-                InteractiveFlag.flingAnimation, // Use specific flags
-            initialCenter: LatLng(widget.myLat, widget.myLong),
-            initialZoom: widget.zoom,
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            onMapReady: () {
-              // Get the initial map center when the map is ready
-              widget.updateMapCenter();
-            },
-            onPositionChanged: (MapPosition position, bool hasGesture) {
-              // Update map center whenever the position changes
-              widget.updateMapCenter();
-            },
-            onLongPress: (tapPosition, point) {
-              // Handle long press
-            },
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: tileLayerUrl,
-              subdomains: ['a', 'b', 'c'],
-              retinaMode: true,
-              tileProvider: CachedTileProvider(
-                  // maxStale keeps the tile cached for the given Duration and
-                  // tries to revalidate the next time it gets requested
-                  maxStale: const Duration(days: 30),
-                  store: _cacheStore),
-            ),
-            MarkerLayer(markers: widget.markers),
-            MarkerLayer(markers: _markers),
-            MarkerLayer(
-              markers: [
-                // My Location
-                Marker(
-                  point: LatLng(widget.myLat, widget.myLong),
-                  width: 20,
-                  height: 20,
-                  child: const Opacity(
-                    opacity: 0.5,
-                    child: Icon(
-                      Icons.location_history,
-                      // color: Colors.blueAccent,
-                      size: 36,
+        FutureBuilder(
+            future: getPath(),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return FlutterMap(
+                mapController: widget.mapController,
+                options: MapOptions(
+                  cameraConstraint: CameraConstraint.contain(
+                    bounds: LatLngBounds(
+                      const LatLng(-90, -180), // Southwest corner of the bounds
+                      const LatLng(90, 180), // Northeast corner of the bounds
                     ),
                   ),
+                  keepAlive:
+                      true, // so that it does not reset to initial position on changing pages
+                  minZoom: 3.0,
+                  maxZoom: 18.0,
+                  enableScrollWheel: true, // Enable scroll wheel zoom
+                  interactiveFlags: InteractiveFlag.pinchZoom |
+                      InteractiveFlag.drag |
+                      InteractiveFlag.doubleTapZoom |
+                      InteractiveFlag.flingAnimation, // Use specific flags
+                  initialCenter: LatLng(widget.myLat, widget.myLong),
+                  initialZoom: widget.zoom,
+                  backgroundColor: isDarkMode ? Colors.black : Colors.white,
+                  onMapReady: () {
+                    // Get the initial map center when the map is ready
+                    widget.updateMapCenter();
+                  },
+                  onPositionChanged: (MapPosition position, bool hasGesture) {
+                    // Update map center whenever the position changes
+                    widget.updateMapCenter();
+                  },
+                  onLongPress: (tapPosition, point) {
+                    // Handle long press
+                  },
                 ),
-              ],
-            ),
-          ],
-        ),
+                children: [
+                  TileLayer(
+                    urlTemplate: tileLayerUrl,
+                    subdomains: ['a', 'b', 'c'],
+                    retinaMode: true,
+                    tileProvider: CachedTileProvider(
+                      maxStale: const Duration(days: 30),
+                      store: HiveCacheStore(
+                        snapshot.data,
+                        hiveBoxName: 'HiveCacheStore',
+                      ),
+                    ),
+                  ),
+                  MarkerLayer(markers: widget.markers),
+                  MarkerLayer(markers: _markers),
+                  MarkerLayer(
+                    markers: [
+                      // My Location
+                      Marker(
+                        point: LatLng(widget.myLat, widget.myLong),
+                        width: 20,
+                        height: 20,
+                        child: const Opacity(
+                          opacity: 0.5,
+                          child: Icon(
+                            Icons.location_history,
+                            // color: Colors.blueAccent,
+                            size: 36,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }),
         if (calculateDistance(LatLng(widget.myLat, widget.myLong),
                 LatLng(widget.centerLat, widget.centerLong)) >
             20.0)

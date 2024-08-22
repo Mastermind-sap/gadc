@@ -118,8 +118,11 @@ class _ExplorePageState extends State<ExplorePage>
                           fontWeight: FontWeight.bold, fontSize: 48.0),
                     ),
                     DefaultTextStyle(
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 30.0,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
                       ),
                       child: AnimatedTextKit(
                         isRepeatingAnimation: false,
@@ -139,7 +142,7 @@ class _ExplorePageState extends State<ExplorePage>
                           print("Tap Event");
                         },
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -291,8 +294,13 @@ class _ExplorePageState extends State<ExplorePage>
   void _showTextModalSheet() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true, // Allows the sheet to take a custom height
       builder: (BuildContext context) {
-        return const CustomChatBot();
+        return FractionallySizedBox(
+          heightFactor:
+              0.85, // This will make the bottom sheet cover 80% of the screen height
+          child: const CustomChatBot(),
+        );
       },
     ).then((value) {
       // This code executes after the bottom sheet is closed
@@ -820,32 +828,35 @@ class _ExplorePageState extends State<ExplorePage>
                                 ),
                               ),
                             ),
-                          Align(
-                            alignment: const AlignmentDirectional(-1, 1),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    fromBottomRoute(const NavigationPage()),
-                                  );
-                                },
-                                child: Card(
-                                  key: _dropButtonKey,
-                                  color: (Theme.of(context).brightness ==
-                                          Brightness.dark)
-                                      ? const Color.fromARGB(255, 29, 36, 40)
-                                      : Colors.white,
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(6),
-                                    child: Icon(
-                                      Icons.arrow_drop_up,
-                                      size: 24,
+                          SafeArea(
+                            child: Align(
+                              alignment: const AlignmentDirectional(-1, 1),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 0, 0, 16),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      fromBottomRoute(const NavigationPage()),
+                                    );
+                                  },
+                                  child: Card(
+                                    key: _dropButtonKey,
+                                    color: (Theme.of(context).brightness ==
+                                            Brightness.dark)
+                                        ? const Color.fromARGB(255, 29, 36, 40)
+                                        : Colors.white,
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    elevation: 4,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(6),
+                                      child: Icon(
+                                        Icons.arrow_drop_up,
+                                        size: 24,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -861,10 +872,6 @@ class _ExplorePageState extends State<ExplorePage>
             ],
           ),
         ),
-        // if (talk == true)
-        //   Center(
-        //     child: LottieBuilder.asset("assets/ai_speaking.json"),
-        //   ),
       ],
     );
   }

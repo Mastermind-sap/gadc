@@ -20,8 +20,19 @@ class _DeveloperMessageWidgetState extends State<DeveloperMessageWidget> {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(
-                    'Message from\nTHE DEVELOPERS',
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.arrow_back)),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  const Text(
+                    'Message from\nDEVELOPERS',
                     style: TextStyle(
                       fontSize: 24,
                       letterSpacing: 0,
@@ -30,11 +41,11 @@ class _DeveloperMessageWidgetState extends State<DeveloperMessageWidget> {
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               thickness: 1,
               endIndent: 150,
             ),
-            Container(
+            SizedBox(
               width: double.infinity,
               height: 300,
               child: Stack(
@@ -377,103 +388,103 @@ class _DeveloperMessageWidgetState extends State<DeveloperMessageWidget> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: Image.asset(
-                            'assets/pragyan.jpg',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'PRAGYAN',
-                              style: TextStyle(
-                                fontFamily: 'Readex Pro',
-                                fontSize: 24,
-                                letterSpacing: 0,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0, 0, 0, 8),
-                              child: Text(
-                                'AI',
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0, 0, 0, 8),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      launchURL(
-                                          'https://www.linkedin.com/in/pragyan-das-197086255/');
-                                    },
-                                    child: Image.asset(
-                                      'assets/linkedin_icon.png',
-                                      height: 36,
-                                      width: 36,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 4,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      launchURL(
-                                          'https://github.com/pragyan4261');
-                                    },
-                                    child: Image.asset(
-                                      'assets/github_icon.png',
-                                      height: 36,
-                                      width: 36,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Align(
-                              alignment: AlignmentDirectional(0, 0),
-                              child: Card(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(24),
-                                    bottomRight: Radius.circular(24),
-                                    topLeft: Radius.circular(0),
-                                    topRight: Radius.circular(24),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    '"Hope it helps\neveryone\nfind their way easly!"',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Row(
+                  //     mainAxisSize: MainAxisSize.max,
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       Container(
+                  //         width: 120,
+                  //         height: 120,
+                  //         clipBehavior: Clip.antiAlias,
+                  //         decoration: BoxDecoration(
+                  //           shape: BoxShape.circle,
+                  //         ),
+                  //         child: Image.asset(
+                  //           'assets/pragyan.jpg',
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //       ),
+                  // SizedBox(width: 16),
+                  // Column(
+                  //   mainAxisSize: MainAxisSize.max,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(
+                  //       'PRAGYAN',
+                  //       style: TextStyle(
+                  //         fontFamily: 'Readex Pro',
+                  //         fontSize: 24,
+                  //         letterSpacing: 0,
+                  //       ),
+                  //     ),
+                  //     Padding(
+                  //       padding: const EdgeInsetsDirectional.fromSTEB(
+                  //           0, 0, 0, 8),
+                  //       child: Text(
+                  //         'AI',
+                  //       ),
+                  //     ),
+                  //     Padding(
+                  //       padding: const EdgeInsetsDirectional.fromSTEB(
+                  //           0, 0, 0, 8),
+                  //       child: Row(
+                  //         children: [
+                  //           GestureDetector(
+                  //             onTap: () {
+                  //               launchURL(
+                  //                   'https://www.linkedin.com/in/pragyan-das-197086255/');
+                  //             },
+                  //             child: Image.asset(
+                  //               'assets/linkedin_icon.png',
+                  //               height: 36,
+                  //               width: 36,
+                  //             ),
+                  //           ),
+                  //           SizedBox(
+                  //             width: 4,
+                  //           ),
+                  //           GestureDetector(
+                  //             onTap: () {
+                  //               launchURL(
+                  //                   'https://github.com/pragyan4261');
+                  //             },
+                  //             child: Image.asset(
+                  //               'assets/github_icon.png',
+                  //               height: 36,
+                  //               width: 36,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     Align(
+                  //       alignment: AlignmentDirectional(0, 0),
+                  //       child: Card(
+                  //         clipBehavior: Clip.antiAliasWithSaveLayer,
+                  //         elevation: 4,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.only(
+                  //             bottomLeft: Radius.circular(24),
+                  //             bottomRight: Radius.circular(24),
+                  //             topLeft: Radius.circular(0),
+                  //             topRight: Radius.circular(24),
+                  //           ),
+                  //         ),
+                  //         child: Padding(
+                  //           padding: const EdgeInsets.all(8.0),
+                  //           child: Text(
+                  //             '"Hope it helps\neveryone\nfind their way easly!"',
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // ],
+                  // ),
+                  // ),
                 ],
               ),
             ),
