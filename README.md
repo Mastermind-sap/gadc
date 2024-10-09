@@ -180,4 +180,5 @@ Just download it from the Play Store or from the [releases](https://github.com/M
   <a href="https://github.com/Gaurav-822"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/gaurav.png" width="100" height="100" style="border-radius: 50%;" alt="Team Member 2"></a>
   <a href="https://github.com/Sid-NITS"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/gugu.jpg" width="100" height="100" style="border-radius: 50%;" alt="Team Member 3"></a>
   <a href="https://github.com/Mastermind-sap"><img src="https://github.com/Mastermind-sap/gadc/blob/master/assets/mastermind_sap.jpg" width="100" height="100" style="border-radius: 50%;" alt="Team Member 1"></a>
+    <a href="https://github.com/padmajamazumder"><img src="https://avatars.githubusercontent.com/u/141434108?v=4" width="100" height="100" style="border-radius: 50%;" alt="Team Member 1"></a>
 </p>
